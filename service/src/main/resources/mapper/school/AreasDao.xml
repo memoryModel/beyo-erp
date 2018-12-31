@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.school.areas.dao.AreasDao">
+
+	<sql id="areasColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.area_name AS "areaName",
+		a.description AS "description",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status AS "status"
+	</sql>
+
+	<sql id="areasJoins">
+	</sql>
+
+	<select id="get" resultType="Areas">
+		SELECT
+		<include refid="areasColumns"/>
+		FROM school_area a
+		<include refid="areasJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getAreasList" resultType="Areas">
+		SELECT
+		area_name,id
+		FROM school_area a
+		WHERE status = 0
+		GROUP BY area_name
+	</select>
+
+
+	<insert id="insert">
+		INSERT INTO school_area(
+		id,
+		platform_id,
+		area_name,
+		description,
+		create_time,
+		create_user,
+		status
+		) VALUES (
+		#{id},
+		#{platformId},
+		#{areaName},
+		#{description},
+		#{createTime},
+		#{createUser},
+		#{status}
+		)
+	</insert>
+
+</mapper>

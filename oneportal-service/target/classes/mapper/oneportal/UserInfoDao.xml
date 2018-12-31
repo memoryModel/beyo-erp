@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.beyo.erp.modules.oneportal.dao.UserInfoDao">
+    <sql id="userInfoColumns">
+        a.id,
+        a.loginId,
+        a.loginPwd,
+        a.userName,
+        a.userEmail,
+        a.userPhone,
+        a.company,
+        a.department,
+        a.post,
+        a.workplace,
+        a.employeNo,
+        a.createDate,
+        a.updateDate,
+        a.companyId,
+        a.isDelete,
+        a.isAdmin,
+        a.isEnableb,
+        a.sex,
+        a.headImage,
+        a.remainLeave,
+        a.openId,
+        a.superAdmin,
+        a.registrationid,
+        a.source,
+        a.lastlogindate,
+        a.hideUserPhone,
+        a.hideUserEmail,
+        a.canViewAllPhoneAndEmail
+    </sql>
+
+    <sql id="userInfoSignDetail">
+        SELECT
+            u.employeNo,
+            u.userName,
+            d.deptname,
+            Ifnull(m.cd, 0) AS "userInfocd",
+            -- 迟到次数
+            Ifnull(a.zt, 0) AS "userInfozt",
+            -- 早退次数
+            Ifnull(e.cq, 0) AS "userInfocq",
+            -- 出勤天数
+            Ifnull(f.qk, 0) AS "userInfoqk",
+            -- 缺卡次数
+            Ifnull(g.zc, 0) AS "userInfozc",
+            -- 正常打卡
+            Ifnull(k.kg, 0) AS "userInfokg",
+            -- 旷工次数
+            d.deptname AS "department"
+        FROM
+            user_info u
+        LEFT JOIN (
+            SELECT
+                s.employee_no,
+                Count(s.sign_state_m) AS cd
+            FROM
+                sign_detail s
+            WHERE
+                s.sign_state_m = 2
+            AND s.employee_no = #{employeNo}
+        ) m ON m.employee_no = u.employeno
+        LEFT JOIN (
+            SELECT
+                s.employee_no,
+                Count(s.sign_state_a) AS zt
+            FROM
+                sign_detail s
+            WHERE
+                s.sign_state_a = 2
+            AND s.employee_no = #{employeNo}
+        ) a ON a.employee_no = u.employeno
+        LEFT JOIN (
+            SELECT
+                s.employee_no,
+                Count(s.sign_state) AS cq
+            FROM
+                sign_detail s
+            WHERE
+                (
+                    s.sign_state_m != 0
+                    OR s.sign_state_a != 0
+                )
+            AND s.employee_no = #{employeNo}
+        ) e ON e.employee_no = u.employeno
+        LEFT JOIN (
+            SELECT
+                s.employee_no,
+                Count(s.sign_state) AS qk
+            FROM
+                sign_detail s
+            WHERE
+                (
+                    s.sign_state_m = 0
+                    OR s.sign_state_a = 0
+                )
+            AND s.employee_no = #{employeNo}
+        ) f ON f.employee_no = u.employeno
+        LEFT JOIN (
+            SELECT
+                s.employee_no,
+                Count(s.sign_state) AS kg
+            FROM
+                sign_detail s
+            WHERE
+                (
+                    s.sign_state_m = 0
+                    AND s.sign_state_a = 0
+                )
+            AND s.employee_no = #{employeNo}
+        ) k ON k.employee_no = u.employeno
+        LEFT JOIN (
+            SELECT
+                s.employee_no,
+                Count(s.sign_state) AS zc
+            FROM
+                sign_detail s
+            WHERE
+                s.sign_state = 1
+            AND s.employee_no = #{employeNo}
+        ) g ON g.employee_no = u.employeno
+        LEFT JOIN department_info d ON d.deptid = u.department
+        WHERE
+           u.employeno = #{employeNo}
+    </sql>
+
+    <select id="get" resultType="UserInfo">
+        select
+          <include refid="userInfoColumns"/>
+        from user_info a
+        where a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="UserInfo">
+        SELECT
+        <include refid="userInfoColumns"/>
+        from user_info a
+    </select>
+
+    <select id="findSignDetail" resultType="UserInfo">
+        <foreach collection="employeNoArray" item="employeNo" separator="union all">
+            <include refid="userInfoSignDetail"/>
+        </foreach>
+    </select>
+</mapper>

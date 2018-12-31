@@ -1,0 +1,1593 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+  version="2.0">
+    
+  <description>JSTL 1.1 functions library</description>
+  <display-name>JSTL functions sys</display-name>
+  <tlib-version>1.1</tlib-version>
+  <short-name>erp</short-name>
+  <uri>http://java.sun.com/jsp/jstl/functionserp</uri>
+
+
+  <function>
+    <description>获取通用分类类型选择列表</description>
+    <name>getCommonsTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.utils.CommonsUtils</function-class>
+    <function-signature>java.util.List getCommonsTypeList(java.lang.Integer)</function-signature>
+    <example>${erp:getCommonsTypeList(category)}</example>
+  </function>
+
+  <function>
+    <description>获取通用分类类型信息名称</description>
+    <name>getCommonsTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.utils.CommonsUtils</function-class>
+    <function-signature>java.lang.String getCommonsTypeName(java.lang.Long)</function-signature>
+    <example>${erp:getCommonsTypeName(id)}</example>
+  </function>
+
+  <function>
+    <description>获取员工信息</description>
+    <name>getEmployeeInfo</name>
+    <function-class>cn.com.beyo.erp.commons.utils.CommonsUtils</function-class>
+    <function-signature>cn.com.beyo.erp.modules.erp.employee.entity.Employee getEmployeeInfo(java.lang.Long)</function-signature>
+    <example>${erp:getEmployeeInfo(id)}</example>
+  </function>
+
+  <function>
+    <description>获取通用状态列表</description>
+    <name>commonsStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.Status</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.Status[] all()</function-signature>
+    <example>${erp:commonsStatusList}</example>
+  </function>
+
+  <function>
+    <description>显示通用状态名称</description>
+    <name>commonsStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.Status</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:commonsStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取跟进状态列表</description>
+    <name>findFollowStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.FollowStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.FollowStatus[] findFollowStatusList()</function-signature>
+    <example>${erp:findFollowStatusList}</example>
+  </function>
+
+  <function>
+    <description>显示跟进状态名称</description>
+    <name>getFollowStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.FollowStatus</function-class>
+    <function-signature>java.lang.String getFollowStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:getFollowStatusName(followStatus)}</example>
+  </function>
+
+
+
+  <function>
+    <description>订单状态列表</description>
+    <name>orderStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.OrderStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.OrderStatus[] all()</function-signature>
+    <example>${erp:orderStatusList}</example>
+  </function>
+
+  <function>
+    <description>学校订单状态列表</description>
+    <name>schoolOrderStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.OrderStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.OrderStatus[] schoolAll()</function-signature>
+    <example>${erp:schoolOrderStatusList}</example>
+  </function>
+
+  <function>
+    <description>订单状态名称</description>
+    <name>orderStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.OrderStatus</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:orderStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>订单类别列表</description>
+    <name>orderTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.OrderType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.OrderType[] orderTypeList()</function-signature>
+    <example>${erp:orderTypeList}</example>
+  </function>
+  <function>
+    <description>订单状态名称</description>
+    <name>orderTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.OrderType</function-class>
+    <function-signature>java.lang.String orderTypeName(java.lang.Integer)</function-signature>
+    <example>${erp:orderTypeName(orderType)}</example>
+  </function>
+
+  <function>
+    <description>支付状态列表</description>
+    <name>payStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.PayStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.PayStatus[] all()</function-signature>
+    <example>${erp:payStatusList}</example>
+  </function>
+
+  <function>
+    <description>支付状态名称</description>
+    <name>payStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.PayStatus</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:payStatusName(status)}</example>
+  </function>
+  <function>
+    <description>退款状态列表</description>
+    <name>refundStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.RefundStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.RefundStatus[] refundStatusList()</function-signature>
+    <example>${erp:refundStatusList}</example>
+  </function>
+
+  <function>
+    <description>退款状态名称</description>
+    <name>refundStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.RefundStatus</function-class>
+    <function-signature>java.lang.String refundStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:refundStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取委派状态列表</description>
+    <name>delegateStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.DelegateStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.DelegateStatus[] delegateStatusList()</function-signature>
+    <example>${erp:delegateStatusList}</example>
+  </function>
+
+  <function>
+    <description>显示委派状态名称</description>
+    <name>delegateStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.DelegateStatus</function-class>
+    <function-signature>java.lang.String delegateStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:delegateStatusName(delegateStatus)}</example>
+  </function>
+
+  <function>
+    <description>退费支出状态列表</description>
+    <name>expendStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ExpendStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ExpendStatus[] expendStatusList()</function-signature>
+    <example>${erp:expendStatusList}</example>
+  </function>
+
+  <function>
+    <description>退费支出状态名称</description>
+    <name>expendStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ExpendStatus</function-class>
+    <function-signature>java.lang.String expendStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:expendStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>退费付款状态列表</description>
+    <name>paymentStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.PaymentStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.PaymentStatus[] paymentStatusList()</function-signature>
+    <example>${erp:paymentStatusList}</example>
+  </function>
+
+  <function>
+    <description>退费付款状态名称</description>
+    <name>paymentStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.PaymentStatus</function-class>
+    <function-signature>java.lang.String paymentStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:paymentStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>行李寄存状态列表</description>
+    <name>depositStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.DepositStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.DepositStatus[] depositStatusList()</function-signature>
+    <example>${erp:depositStatusList}</example>
+  </function>
+
+  <function>
+    <description>行李寄存状态名称</description>
+    <name>depositStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.DepositStatus</function-class>
+    <function-signature>java.lang.String depositStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:depositStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>婚姻状态列表</description>
+    <name>marriageStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.MarriageStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.MarriageStatus[] marriageStatusList()</function-signature>
+    <example>${erp:marriageStatusList}</example>
+  </function>
+
+  <function>
+    <description>婚姻状态名称</description>
+    <name>marriageStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.MarriageStatus</function-class>
+    <function-signature>java.lang.String marriageStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:marriageStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>性别状态列表</description>
+    <name>sexStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.SexStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.SexStatus[] sexStatusList()</function-signature>
+    <example>${erp:sexStatusList}</example>
+  </function>
+
+  <function>
+    <description>性别状态名称</description>
+    <name>sexStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.SexStatus</function-class>
+    <function-signature>java.lang.String sexStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:sexStatusName(status)}</example>
+  </function>
+
+
+  <function>
+    <description>收款单状态列表</description>
+    <name>billStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.BillStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.BillStatus[] billStatusList()</function-signature>
+    <example>${erp:billStatusList}</example>
+  </function>
+
+  <function>
+    <description>收款单状态名称</description>
+    <name>billStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.BillStatus</function-class>
+    <function-signature>java.lang.String billStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:billStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>应收账单状态列表</description>
+    <name>receivableBillList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ReceivableBillStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ReceivableBillStatus[] receivableBillList()</function-signature>
+    <example>${erp:receivableBillList}</example>
+  </function>
+
+  <function>
+    <description>应收账单状态名称</description>
+    <name>receivableBillName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ReceivableBillStatus</function-class>
+    <function-signature>java.lang.String receivableBillName(java.lang.Integer)</function-signature>
+    <example>${erp:receivableBillName(receivableBillStatus)}</example>
+  </function>
+
+  <function>
+    <description>派工状态列表</description>
+    <name>dispatchStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.DispatchStatus[] dispatchStatusList()</function-signature>
+    <example>${erp:dispatchStatusList}</example>
+  </function>
+
+  <function>
+    <description>派工状态名称</description>
+    <name>dispatchStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchStatus</function-class>
+    <function-signature>java.lang.String dispatchStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:dispatchStatusName(dispatchStatus)}</example>
+  </function>
+
+  <function>
+    <description>派工服务状态列表</description>
+    <name>dispatchBillStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchBillStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.DispatchBillStatus[] dispatchBillStatusList()</function-signature>
+    <example>${erp:dispatchBillStatusList}</example>
+  </function>
+
+  <function>
+    <description>派工服务状态名称</description>
+    <name>dispatchBillStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchBillStatus</function-class>
+    <function-signature>java.lang.String dispatchBillStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:dispatchBillStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>派工服务人员 推荐状态列表</description>
+    <name>dispatchEmployeeStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchEmployeeStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.DispatchEmployeeStatus[] dispatchEmployeeStatusList()</function-signature>
+    <example>${erp:dispatchEmployeeStatusList}</example>
+  </function>
+
+  <function>
+    <description>派工服务人员 推荐状态名称</description>
+    <name>dispatchEmployeeStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchEmployeeStatus</function-class>
+    <function-signature>java.lang.String dispatchEmployeeStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:dispatchEmployeeStatusName(recommendStatus)}</example>
+  </function>
+
+  <function>
+    <description>服务结算方式 状态列表</description>
+    <name>dispatchPayTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchPayType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.DispatchPayType[] dispatchPayTypeList()</function-signature>
+    <example>${erp:dispatchPayTypeList}</example>
+  </function>
+
+  <function>
+    <description>服务结算方式 状态名称</description>
+    <name>dispatchPayTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchPayType</function-class>
+    <function-signature>java.lang.String dispatchPayTypeName(java.lang.Integer)</function-signature>
+    <example>${erp:dispatchPayTypeName(payType)}</example>
+  </function>
+
+  <function>
+    <description>派工服务人员 上户状态列表</description>
+    <name>dispatchServiceStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchServiceStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.DispatchServiceStatus[] dispatchServiceStatusList()</function-signature>
+    <example>${erp:dispatchServiceStatusList}</example>
+  </function>
+
+  <function>
+    <description>派工服务人员 上户状态名称</description>
+    <name>dispatchServiceStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchServiceStatus</function-class>
+    <function-signature>java.lang.String dispatchServiceStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:dispatchServiceStatusName(endServiceStatus)}</example>
+  </function>
+
+  <function>
+    <description>考勤类型列表 服务人员考勤管理</description>
+    <name>dispatchTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.DispatchType[] dispatchTypeList()</function-signature>
+    <example>${erp:dispatchTypeList}</example>
+  </function>
+
+  <function>
+    <description>考勤类型名称 服务人员考勤管理</description>
+    <name>dispatchTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchType</function-class>
+    <function-signature>java.lang.String dispatchTypeName(java.lang.Integer)</function-signature>
+    <example>${erp:dispatchTypeName(type)}</example>
+  </function>
+
+  <function>
+    <description>考勤状态列表 服务人员考勤管理</description>
+    <name>dispatchServiceForShowList</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchServiceForShow</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.DispatchServiceForShow[] dispatchServiceForShowList()</function-signature>
+    <example>${erp:dispatchServiceForShowList}</example>
+  </function>
+
+  <function>
+    <description>考勤状态名称 服务人员考勤管理</description>
+    <name>dispatchServiceForShowName</name>
+    <function-class>cn.com.beyo.erp.commons.status.DispatchServiceForShow</function-class>
+    <function-signature>java.lang.String dispatchServiceForShowName(java.lang.Integer)</function-signature>
+    <example>${erp:dispatchServiceForShowName(serviceStatus)}</example>
+  </function>
+
+
+  <function>
+    <description>班级状态列表</description>
+    <name>classStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ClassStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ClassStatus[] classStatusList()</function-signature>
+    <example>${erp:classStatusList}</example>
+  </function>
+
+  <function>
+    <description>班级状态名称</description>
+    <name>classStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ClassStatus</function-class>
+    <function-signature>java.lang.String classStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:classStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>开班计划状态列表</description>
+    <name>classPlanStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ClassPlanStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ClassPlanStatus[] classPlanStatusList()</function-signature>
+    <example>${erp:classPlanStatusList}</example>
+  </function>
+
+  <function>
+    <description>开班计划状态名称</description>
+    <name>classPlanStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ClassPlanStatus</function-class>
+    <function-signature>java.lang.String classPlanStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:classPlanStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>考试状态列表</description>
+    <name>infoStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.InfoStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.InfoStatus[] infoStatusList()</function-signature>
+    <example>${erp:infoStatusList}</example>
+  </function>
+
+  <function>
+    <description>考试状态名称</description>
+    <name>infoStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.InfoStatus</function-class>
+    <function-signature>java.lang.String infoStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:infoStatusName(infoStatus)}</example>
+  </function>
+
+  <function>
+    <description>补课状态列表</description>
+    <name>lessonStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ArrangeLessonStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ArrangeLessonStatus[] lessonStatusList()</function-signature>
+    <example>${erp:StatusList}</example>
+  </function>
+
+  <function>
+    <description>补课状态名称</description>
+    <name>lessonStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ArrangeLessonStatus</function-class>
+    <function-signature>java.lang.String lessonStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:arrangeLessonStatusName(status)}</example>
+  </function>
+
+
+  <function>
+    <description>成绩状态列表</description>
+    <name>passStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.PassStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.PassStatus[] passStatusList()</function-signature>
+    <example>${erp:passStatusList}</example>
+  </function>
+
+  <function>
+    <description>成绩状态名称</description>
+    <name>passStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.PassStatus</function-class>
+    <function-signature>java.lang.String passStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:passStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>上课签到状态列表</description>
+    <name>lessonSignList</name>
+    <function-class>cn.com.beyo.erp.commons.status.LessonsSignStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.LessonsSignStatus[] lessonSignStatusList()</function-signature>
+    <example>${erp:lessonSignList}</example>
+  </function>
+
+  <function>
+    <description>上课签到状态名称</description>
+    <name>lessonSignName</name>
+    <function-class>cn.com.beyo.erp.commons.status.LessonsSignStatus</function-class>
+    <function-signature>java.lang.String lessonSignName(java.lang.Integer)</function-signature>
+    <example>${erp:lessonSignName(status)}</example>
+  </function>
+
+  <function>
+    <description>通用状态名称</description>
+    <name>commonsTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.CommonsType</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:commonsTypeName(status)}</example>
+  </function>
+  <function>
+    <description>通用状态列表</description>
+    <name>commonsTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.CommonsType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.CommonsType[] all()</function-signature>
+    <example>${erp:commonsTypeList}</example>
+  </function>
+
+  <function>
+    <description>客户状态列表</description>
+    <name>clientStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ClientStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ClientStatus[] clientStatusList()</function-signature>
+    <example>${erp:clientStatusList}</example>
+  </function>
+
+  <function>
+    <description>客户状态名称</description>
+    <name>clientStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ClientStatus</function-class>
+    <function-signature>java.lang.String clientStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:clientStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>学员状态列表</description>
+    <name>studentStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.StudentStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.StudentStatus[] studentStatusList()</function-signature>
+    <example>${erp:studentStatusList}</example>
+  </function>
+  <function>
+    <description>学员状态名称</description>
+    <name>studentStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.StudentStatus</function-class>
+    <function-signature>java.lang.String studentStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:studentStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>员工请假状态列表</description>
+    <name>employeeLeaveStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeLeaveStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.EmployeeLeaveStatus[] employeeLeaveStatusList()</function-signature>
+    <example>${erp:employeeLeaveStatusList}</example>
+  </function>
+  <function>
+    <description>员工请假状态名称</description>
+    <name>employeeLeaveStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeLeaveStatus</function-class>
+    <function-signature>java.lang.String employeeLeaveStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:employeeLeaveStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取学员住宿状态列表</description>
+    <name>resideStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ResideStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ResideStatus[] resideStatusList()</function-signature>
+    <example>${erp:resideStatusList}</example>
+  </function>
+
+  <function>
+    <description>显示学员住宿状态名称</description>
+    <name>resideStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ResideStatus</function-class>
+    <function-signature>java.lang.String resideStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:resideStatusName(dormitory)}</example>
+  </function>
+
+
+  <function>
+    <description>获取入住状态列表</description>
+    <name>liveStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.LiveStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.LiveStatus[] liveStatusList()</function-signature>
+    <example>${erp:liveStatusList}</example>
+  </function>
+
+  <function>
+    <description>显示入住状态名称</description>
+    <name>liveStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.LiveStatus</function-class>
+    <function-signature>java.lang.String liveStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:liveStatusName(status)}</example>
+  </function>
+
+
+  <function>
+    <description>面试状态列表</description>
+    <name>interviewStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.InterviewStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.InterviewStatus[] interviewStatusList()</function-signature>
+    <example>${erp:interviewStatusList}</example>
+  </function>
+
+  <function>
+    <description>面试状态名称</description>
+    <name>interviewStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.InterviewStatus</function-class>
+    <function-signature>java.lang.String interviewStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:interviewStatusName(status)}</example>
+  </function>
+
+
+  <function>
+    <description>获取商品类型列表</description>
+    <name>productTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ProductType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ProductType[] all()</function-signature>
+    <example>${erp:productTypeList}</example>
+  </function>
+
+  <function>
+    <description>显示商品类型名称</description>
+    <name>productTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ProductType</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:productTypeName(status)}</example>
+  </function>
+  <function>
+    <description>获取商品销售类型列表</description>
+    <name>productSaleTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ProductSaleType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ProductSaleType[] all()</function-signature>
+    <example>${erp:productSaleTypeList}</example>
+  </function>
+
+  <function>
+    <description>显示商品销售类型名称</description>
+    <name>productSaleTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ProductSaleType</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:productSaleTypeName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取商品组合列表</description>
+    <name>productAssembleList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ProductAssemble</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ProductAssemble[] all()</function-signature>
+    <example>${erp:productAssembleList}</example>
+  </function>
+
+  <function>
+    <description>显示商品组合名称</description>
+    <name>productAssembleName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ProductAssemble</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:productAssembleName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取商品状态列表</description>
+    <name>productStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ProductStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ProductStatus[] all()</function-signature>
+    <example>${erp:productStatusList}</example>
+  </function>
+
+  <function>
+    <description>显示商品状态名称</description>
+    <name>productStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ProductStatus</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:productStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取图片状态列表</description>
+    <name>uploadStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.UploadStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.UploadStatus[] uploadStatusList()</function-signature>
+    <example>${erp:uploadStatusList}</example>
+  </function>
+
+  <function>
+    <description>显示图片状态名称</description>
+    <name>uploadStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.UploadStatus</function-class>
+    <function-signature>java.lang.String uploadStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:uploadStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>客户跟进状态列表</description>
+    <name>customerStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.CustomerStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.CustomerStatus[] customerStatusList()</function-signature>
+    <example>${erp:interviewStatusList}</example>
+  </function>
+
+  <function>
+    <description>客户跟进状态名称</description>
+    <name>customerStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.CustomerStatus</function-class>
+    <function-signature>java.lang.String customerStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:customerStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取审批状态列表</description>
+    <name>approveStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ApproveStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ApproveStatus[] approveStatusList()</function-signature>
+    <example>${erp:approveStatusList}</example>
+  </function>
+
+  <function>
+    <description>显示审批状态名称</description>
+    <name>approveStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ApproveStatus</function-class>
+    <function-signature>java.lang.String approveStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:approveStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取开票状态列表</description>
+    <name>InvoiceStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.InvoiceStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.InvoiceStatus[] InvoiceStatusList()</function-signature>
+    <example>${erp:InvoiceStatusList}</example>
+  </function>
+
+  <function>
+    <description>显示开票状态名称</description>
+    <name>InvoiceStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.InvoiceStatus</function-class>
+    <function-signature>java.lang.String InvoiceStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:InvoiceStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>定级状态列表</description>
+    <name>entryStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.EntryStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.EntryStatus[] all()</function-signature>
+    <example>${erp:entryStatusList}</example>
+  </function>
+
+  <function>
+    <description>定级状态名称</description>
+    <name>entryStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.EntryStatus</function-class>
+    <function-signature>java.lang.String find(java.lang.Integer)</function-signature>
+    <example>${erp:entryStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>签管理状态列表</description>
+    <name>employeeEntryList</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeEntryStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.EmployeeEntryStatus[] employeeEntryList()</function-signature>
+    <example>${erp:employeeEntryLis}</example>
+  </function>
+
+  <function>
+    <description>签约状态名称</description>
+    <name>employeeEntryName</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeEntryStatus</function-class>
+    <function-signature>java.lang.String employeeEntryName(java.lang.Integer)</function-signature>
+    <example>${erp:employeeEntryName(status)}</example>
+  </function>
+
+  <function>
+    <description>住宿状态名称</description>
+    <name>roomStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.RoomStatus</function-class>
+    <function-signature>java.lang.String roomStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:roomStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>住宿状态列表</description>
+    <name>roomStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.RoomStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.RoomStatus[] roomStatusList()</function-signature>
+    <example>${erp:roomStatusList}</example>
+  </function>
+
+
+  <function>
+    <description>员工状态列表</description>
+    <name>employeeStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.EmployeeStatus[] employeeStatusList()</function-signature>
+    <example>${erp:employeeStatusList}</example>
+  </function>
+
+  <function>
+    <description>员工状态名称</description>
+    <name>employeeStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeStatus</function-class>
+    <function-signature>java.lang.String employeeStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:employeeStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>请假状态列表</description>
+    <name>leaveStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.LeaveStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.LeaveStatus[] leaveStatusList()</function-signature>
+    <example>${erp:leaveStatusList}</example>
+  </function>
+
+  <function>
+    <description>请假状态名称</description>
+    <name>leaveStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.LeaveStatus</function-class>
+    <function-signature>java.lang.String leaveStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:leaveStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>简历状态列表</description>
+    <name>resumeStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ResumeStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ResumeStatus[] resumeStatusList()</function-signature>
+    <example>${erp:resumeStatusList}</example>
+  </function>
+
+  <function>
+    <description>简历状态名称</description>
+    <name>resumeStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ResumeStatus</function-class>
+    <function-signature>java.lang.String resumeStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:resumeStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>员工服务状态列表</description>
+    <name>employeeListStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeListStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.EmployeeListStatus[] employeeListStatusList()</function-signature>
+    <example>${erp:employeeListStatusList}</example>
+  </function>
+
+  <function>
+    <description>员工服务状态名称</description>
+    <name>employeeListStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeListStatus</function-class>
+    <function-signature>java.lang.String employeeListStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:employeeListStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>欠款状态列表</description>
+    <name>debtStatusesList</name>
+    <function-class>cn.com.beyo.erp.commons.status.DebtStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.DebtStatus[] debtStatusList()</function-signature>
+    <example>${erp:debtStatusesList}</example>
+  </function>
+
+  <function>
+    <description>欠款状态名称</description>
+    <name>debtStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.DebtStatus</function-class>
+    <function-signature>java.lang.String debtStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:debtStatusName(status)}</example>
+  </function>
+
+
+  <function>
+    <description>签约状态列表</description>
+    <name>employeeInfoTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeInfoType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.EmployeeInfoType[] employeeInfoTypeList()</function-signature>
+    <example>${erp:employeeInfoTypeList}</example>
+  </function>
+
+  <function>
+    <description>签约状态名称</description>
+    <name>employeeInfoTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeInfoType</function-class>
+    <function-signature>java.lang.String employeeInfoTypeName(java.lang.Integer)</function-signature>
+    <example>${erp:employeeInfoTypeName(status)}</example>
+  </function>
+
+  <function>
+    <description>合同签约状态列表</description>
+    <name>contractSignStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ContractSignStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ContractSignStatus[] all()</function-signature>
+    <example>${erp:contractSignStatusList}</example>
+  </function>
+
+  <function>
+    <description>合同签约状态名称</description>
+    <name>contractSignStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ContractSignStatus</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:contractSignStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取计价单位列表</description>
+    <name>unitStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.UnitStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.UnitStatus[] unitStatusList()</function-signature>
+    <example>${erp:unitStatusList}</example>
+  </function>
+
+  <function>
+    <description>显示计价单位名称</description>
+    <name>unitStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.UnitStatus</function-class>
+    <function-signature>java.lang.String unitStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:unitStatusName(unit)}</example>
+  </function>
+
+  <function>
+    <description>获取技能类型列表</description>
+    <name>skillCatageryList</name>
+    <function-class>cn.com.beyo.erp.commons.status.SkillCatagery</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.SkillCatagery[] skillCatageryList()</function-signature>
+    <example>${erp:skillCatageryList}</example>
+  </function>
+
+  <function>
+    <description>显示技能类型名称</description>
+    <name>skillCatageryName</name>
+    <function-class>cn.com.beyo.erp.commons.status.SkillCatagery</function-class>
+    <function-signature>java.lang.String skillCatageryName(java.lang.Integer)</function-signature>
+    <example>${erp:skillCatageryName(category)}</example>
+  </function>
+
+  <function>
+    <description>获取入住类型列表</description>
+    <name>liveTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.LiveTypeStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.LiveTypeStatus[] liveTypeList()</function-signature>
+    <example>${erp:liveTypeList}</example>
+  </function>
+
+  <function>
+    <description>显示入住类型名称</description>
+    <name>liveTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.LiveTypeStatus</function-class>
+    <function-signature>java.lang.String liveTypeName(java.lang.Integer)</function-signature>
+    <example>${erp:liveTypeName(type)}</example>
+  </function>
+
+  <function>
+    <description>学生类型列表</description>
+    <name>StudentTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.StudentTypeStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.StudentTypeStatus[] StudentTypeList()</function-signature>
+    <example>${erp:StudentTypeList}</example>
+  </function>
+
+  <function>
+    <description>显示学生类型名称</description>
+    <name>studentTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.StudentTypeStatus</function-class>
+    <function-signature>java.lang.String studentTypeName(java.lang.Integer)</function-signature>
+    <example>${erp:studentTypeName(type)}</example>
+  </function>
+
+  <function>
+    <description>学生中间表状态列表</description>
+    <name>ClassStudentsList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ClassStudentsStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ClassStudentsStatus[] ClassStudentsList()</function-signature>
+    <example>${erp:ClassStudentsList}</example>
+  </function>
+
+  <function>
+    <description>显示学生中间表状态名称</description>
+    <name>ClassStudentsName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ClassStudentsStatus</function-class>
+    <function-signature>java.lang.String ClassStudentsName(java.lang.Integer)</function-signature>
+    <example>${erp:ClassStudentsName(status)}</example>
+  </function>
+
+  <function>
+    <description>学生订单缴费状态列表</description>
+    <name>feeStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.FeeStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.FeeStatus[] all()</function-signature>
+    <example>${erp:feeStatusList}</example>
+  </function>
+
+  <function>
+    <description>学生订单缴费状态名称</description>
+    <name>feeStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.FeeStatus</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:feeStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取题库类型列表</description>
+    <name>examTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ExamStoreType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ExamStoreType[] all()</function-signature>
+    <example>${erp:examTypeList}</example>
+  </function>
+
+  <function>
+    <description>显示题库类型名称</description>
+    <name>examTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ExamStoreType</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:examTypeName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取试题类型列表</description>
+    <name>examQuestionTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ExamQuestionType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ExamQuestionType[] all()</function-signature>
+    <example>${erp:examQuestionTypeList}</example>
+  </function>
+
+  <function>
+    <description>显示试题类型名称</description>
+    <name>examQuestionTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ExamQuestionType</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:examQuestionTypeName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取试卷规则列表</description>
+    <name>examRuleTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ExamRuleType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ExamRuleType[] all()</function-signature>
+    <example>${erp:examRuleTypeList}</example>
+  </function>
+
+  <function>
+    <description>显示试卷规则名称</description>
+    <name>examRuleTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ExamRuleType</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:examRuleTypeName(status)}</example>
+  </function>
+
+  <function>
+    <description>获取补考预约状态列表</description>
+    <name>makeupStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.MakeupStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.MakeupStatus[] all()</function-signature>
+    <example>${erp:makeupStatusList}</example>
+  </function>
+
+  <function>
+    <description>显示补考预约状态名称</description>
+    <name>makeupStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.MakeupStatus</function-class>
+    <function-signature>java.lang.String findName(java.lang.Integer)</function-signature>
+    <example>${erp:makeupStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>上课状态列表</description>
+    <name>lessonsStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.LessonsStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.LessonsStatus[] lessonsStatusList()</function-signature>
+    <example>${erp:lessonsStatusList}</example>
+  </function>
+
+  <function>
+    <description>上课状态名称</description>
+    <name>lessonsStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.LessonsStatus</function-class>
+    <function-signature>java.lang.String lessonsStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:lessonsStatusName(status)}</example>
+  </function>
+
+
+  <function>
+    <description>客户成单状态列表</description>
+    <name>customerSaleStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.CustomerSaleStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.CustomerSaleStatus[] all()</function-signature>
+    <example>${erp:customerSaleStatusList}</example>
+  </function>
+
+  <function>
+    <description>客户成单状态名称</description>
+    <name>customerSaleStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.CustomerSaleStatus</function-class>
+    <function-signature>java.lang.String find(java.lang.Integer)</function-signature>
+    <example>${erp:customerSaleStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>员工性质类型列表</description>
+    <name>employeeTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.EmployeeType[] employeeTypeList()</function-signature>
+    <example>${erp:employeeTypeList}</example>
+  </function>
+
+  <function>
+    <description>员工性质类型名称</description>
+    <name>employeeTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeType</function-class>
+    <function-signature>java.lang.String employeeTypeName(java.lang.Integer)</function-signature>
+    <example>${erp:employeeTypeName(status)}</example>
+  </function>
+
+  <function>
+    <description>服务人员结算类型列表</description>
+    <name>employeePayTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeePayType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.EmployeePayType[] all()</function-signature>
+    <example>${erp:employeePayTypeList}</example>
+  </function>
+
+  <function>
+    <description>服务人员结算类型名称</description>
+    <name>employeePayTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeePayType</function-class>
+    <function-signature>java.lang.String find(java.lang.Integer)</function-signature>
+    <example>${erp:employeePayTypeName(status)}</example>
+  </function>
+
+  <function>
+    <description>底薪类型列表</description>
+    <name>basePayStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.BasePayStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.BasePayStatus[] basePayStatusList()</function-signature>
+    <example>${erp:basePayStatusList}</example>
+  </function>
+
+  <function>
+    <description>底薪类型名称</description>
+    <name>basePayStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.BasePayStatus</function-class>
+    <function-signature>java.lang.String basePayStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:basePayStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>工资结算类型列表</description>
+    <name>settleStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.SettleStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.SettleStatus[] all()</function-signature>
+    <example>${erp:employeeTypeList}</example>
+  </function>
+
+  <function>
+    <description>工资结算类型名称</description>
+    <name>settleStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.SettleStatus</function-class>
+    <function-signature>java.lang.String find(java.lang.Integer)</function-signature>
+    <example>${erp:settleStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>采购单类型列表</description>
+    <name>procurementTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ProcurementType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ProcurementType[] procurementTypeList()</function-signature>
+    <example>${erp:procurementTypeList}</example>
+  </function>
+
+  <function>
+    <description>采购单类型名称</description>
+    <name>ProcurementTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ProcurementType</function-class>
+    <function-signature>java.lang.String ProcurementTypeName(java.lang.Integer)</function-signature>
+    <example>${erp:ProcurementTypeName(type)}</example>
+  </function>
+
+
+  <function>
+    <description>结算状态列表（结算管理）</description>
+    <name>employeePayRecordStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeePayRecordStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.EmployeePayRecordStatus[] employeePayRecordStatusList()</function-signature>
+    <example>${erp:procurementTypeList}</example>
+  </function>
+
+  <function>
+    <description>结算状态名称（结算管理）</description>
+    <name>EmployeePayRecordStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeePayRecordStatus</function-class>
+    <function-signature>java.lang.String EmployeePayRecordStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:EmployeePayRecordStatusName(type)}</example>
+  </function>
+  <function>
+    <description>指派状态列表（招工管理）</description>
+    <name>getAssignStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.AssignStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.AssignStatus[] getAssignStatusList()</function-signature>
+    <example>${erp:getAssignStatusList}</example>
+  </function>
+
+  <function>
+    <description>指派状态名称（招工管理）</description>
+    <name>getAssginStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.AssignStatus</function-class>
+    <function-signature>java.lang.String getAssginStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:getAssginStatusName(assginStatus)}</example>
+  </function>
+
+  <function>
+    <description>沟通管理状态名称（招工管理）</description>
+    <name>appointStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.AppointStatus</function-class>
+    <function-signature>java.lang.String appointStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:appointStatusName(assginStatus)}</example>
+  </function>
+
+  <function>
+    <description>面试提醒状态（面试管理）</description>
+    <name>remindStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.RemindStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.RemindStatus[] remindStatusList()</function-signature>
+    <example>${erp:remindStatusList}</example>
+  </function>
+
+  <function>
+    <description>面试提醒状态（面试管理）</description>
+    <name>remindStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.RemindStatus</function-class>
+    <function-signature>java.lang.String remindStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:remindStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>面试计划状态（面试管理）</description>
+    <name>interviewPlanList</name>
+    <function-class>cn.com.beyo.erp.commons.status.InterviewPlanStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.InterviewPlanStatus[] interviewPlanList()</function-signature>
+    <example>${erp:interviewPlanList}</example>
+  </function>
+
+  <function>
+    <description>面试计划状态（面试管理）</description>
+    <name>interviewPlanName</name>
+    <function-class>cn.com.beyo.erp.commons.status.InterviewPlanStatus</function-class>
+    <function-signature>java.lang.String interviewPlanName(java.lang.Integer)</function-signature>
+    <example>${erp:interviewPlanName(status)}</example>
+  </function>
+
+  <function>
+    <description>沟通方式列表</description>
+    <name>communicationModeStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.CommunicationModeStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.CommunicationModeStatus[] all()</function-signature>
+    <example>${erp:communicationModeStatusList}</example>
+  </function>
+
+  <function>
+    <description>沟通方式名称</description>
+    <name>communicationModeStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.CommunicationModeStatus</function-class>
+    <function-signature>java.lang.String communicationModeStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:communicationModeStatusName(status)}</example>
+  </function>
+
+
+  <function>
+    <description>签约意向列表</description>
+    <name>signingIntentionStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.SigningIntentionStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.SigningIntentionStatus[] all()</function-signature>
+    <example>${erp:signingIntentionStatusList}</example>
+  </function>
+
+  <function>
+    <description>签约意向名称</description>
+    <name>signingIntentionStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.SigningIntentionStatus</function-class>
+    <function-signature>java.lang.String signingIntentionStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:signingIntentionStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>下次沟通安排名称</description>
+    <name>nextCommunicationArrangementStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.NextCommunicationArrangementStatus</function-class>
+    <function-signature>java.lang.String nextCommunicationArrangementStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:nextCommunicationArrangementStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>面试记录提交状态（面试管理）</description>
+    <name>interviewSubmitStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.InterviewSubmitStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.InterviewSubmitStatus[] interviewSubmitStatusList()</function-signature>
+    <example>${erp:interviewSubmitStatusList}</example>
+  </function>
+
+  <function>
+    <description>面试记录提交名称（面试管理）</description>
+    <name>interviewSubmitStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.InterviewSubmitStatus</function-class>
+    <function-signature>java.lang.String interviewSubmitStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:interviewSubmitStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>面试记录提交状态（面试管理）</description>
+    <name>interviewConfirmList</name>
+    <function-class>cn.com.beyo.erp.commons.status.InterviewConfirmStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.InterviewConfirmStatus[] interviewConfirmList()</function-signature>
+    <example>${erp:interviewConfirmList}</example>
+  </function>
+
+  <function>
+    <description>面试记录提交名称（面试管理）</description>
+    <name>interviewConfirmName</name>
+    <function-class>cn.com.beyo.erp.commons.status.InterviewConfirmStatus</function-class>
+    <function-signature>java.lang.String interviewConfirmName(java.lang.Integer)</function-signature>
+    <example>${erp:interviewConfirmName(status)}</example>
+  </function>
+
+  <function>
+    <description>员工续约状态（续约管理）</description>
+    <name>employeeRenewList</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeRenewStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.EmployeeRenewStatus[] employeeRenewList()</function-signature>
+    <example>${erp:employeeRenewList}</example>
+  </function>
+
+  <function>
+    <description>员工续约状态名称（续约管理）</description>
+    <name>employeeRenewName</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeRenewStatus</function-class>
+    <function-signature>java.lang.String employeeRenewName(java.lang.Integer)</function-signature>
+    <example>${erp:employeeRenewName(status)}</example>
+  </function>
+
+  <function>
+    <description>员工续约审批状态（续约审批管理）</description>
+    <name>approvedRenewList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ApprovedRenewStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ApprovedRenewStatus[] approvedRenewList()</function-signature>
+    <example>${erp:approvedRenewList}</example>
+  </function>
+
+  <function>
+    <description>员工续约审批状态名称（续约审批管理）</description>
+    <name>approvedRenewName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ApprovedRenewStatus</function-class>
+    <function-signature>java.lang.String approvedRenewName(java.lang.Integer)</function-signature>
+    <example>${erp:approvedRenewName(status)}</example>
+  </function>
+
+  <function>
+  <description>升降级审批状态列表（升降级管理）</description>
+  <name>findApproveResultList</name>
+  <function-class>cn.com.beyo.erp.commons.status.ApproveResultStatus</function-class>
+  <function-signature>cn.com.beyo.erp.commons.status.ApproveResultStatus[] findApproveResultList()()</function-signature>
+  <example>${erp:findApproveResultList}</example>
+</function>
+
+  <function>
+    <description>升降级审批状态名称（升降级管理）</description>
+    <name>getApproveResultName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ApproveResultStatus</function-class>
+    <function-signature>java.lang.String getApproveResultName(java.lang.Integer)(java.lang.Integer)</function-signature>
+    <example>${erp:getApproveResultName(approveResult)}</example>
+  </function>
+
+  <function>
+    <description>员工解约原因（员工管理）</description>
+    <name>employeeCancellationList</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeCancellationReason</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.EmployeeCancellationReason[] employeeCancellationList()()</function-signature>
+    <example>${erp:employeeCancellationList}</example>
+  </function>
+
+  <function>
+    <description>员工解约原因内容（员工管理）</description>
+    <name>employeeCancellationName</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeCancellationReason</function-class>
+    <function-signature>java.lang.String employeeCancellationName(java.lang.Integer)(java.lang.Integer)</function-signature>
+    <example>${erp:employeeCancellationName(status)}</example>
+  </function>
+
+  <function>
+    <description>员工解约状态（员工管理）</description>
+    <name>employeeCancellationStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeCancellationStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.EmployeeCancellationStatus[] employeeCancellationStatusList()()</function-signature>
+    <example>${erp:employeeCancellationStatusList}</example>
+  </function>
+
+  <function>
+    <description>员工解约原因名称（员工管理）</description>
+    <name>employeeCancellationStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.EmployeeCancellationStatus</function-class>
+    <function-signature>java.lang.String employeeCancellationStatusName(java.lang.Integer)(java.lang.Integer)</function-signature>
+    <example>${erp:employeeCancellationStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>升降级状态（升降级管理）</description>
+    <name>findGradeStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.GradeStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.GradeStatus[] findGradeStatusList()</function-signature>
+    <example>${erp:findGradeStatusList}</example>
+  </function>
+
+  <function>
+    <description>升降级名称（升降级管理）</description>
+    <name>getGradeStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.GradeStatus</function-class>
+    <function-signature>java.lang.String getGradeStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:getGradeStatusName(gradeStatus)}</example>
+  </function>
+
+  <function>
+    <description>续约时单项服务改动状态（续约管理）</description>
+    <name>renewSkillStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.RenewSkillStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.RenewSkillStatus[] renewSkillStatusList()</function-signature>
+    <example>${erp:renewSkillStatusList}</example>
+  </function>
+
+  <function>
+    <description>续约时单项服务改动状态名称（续约管理）</description>
+    <name>renewSkillStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.RenewSkillStatus</function-class>
+    <function-signature>java.lang.String renewSkillStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:renewSkillStatusName(gradeStatus)}</example>
+  </function>
+
+  <function>
+    <description>撤回类型状态列表（线索管理）</description>
+    <name>findCancelTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.CancelType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.CancelType[] findCancelTypeList()</function-signature>
+    <example>${erp:findCancelTypeList}</example>
+  </function>
+
+  <function>
+    <description>撤回类型状态名称（线索管理）</description>
+    <name>getCancelTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.CancelType</function-class>
+    <function-signature>java.lang.String getCancelTypeName(java.lang.Integer)</function-signature>
+    <example>${erp:getCancelTypeName(cancelType)}</example>
+  </function>
+
+
+  <function>
+    <description>客户类别状态列表</description>
+    <name>customerTypeList</name>
+    <function-class>cn.com.beyo.erp.commons.status.CustomerType</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.CustomerType[] customerTypeList()</function-signature>
+    <example>${erp:customerTypeList}</example>
+  </function>
+
+  <function>
+    <description>客户类别状态名称</description>
+    <name>customerTypeName</name>
+    <function-class>cn.com.beyo.erp.commons.status.CustomerType</function-class>
+    <function-signature>java.lang.String customerTypeName(java.lang.Integer)</function-signature>
+    <example>${erp:customerTypeName(status)}</example>
+  </function>
+
+  <function>
+    <description>客户意向状态列表</description>
+    <name>customerIntentionStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.CustomerIntentionStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.CustomerIntentionStatus[] customerIntentionStatusList()</function-signature>
+    <example>${erp:customerIntentionStatusList}</example>
+  </function>
+
+  <function>
+    <description>客户意向状态列表(除去成交客户和退费客户)</description>
+    <name>customerIntentionList</name>
+    <function-class>cn.com.beyo.erp.commons.status.CustomerIntentionStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.CustomerIntentionStatus[] customerIntentionList()</function-signature>
+    <example>${erp:customerIntentionList}</example>
+  </function>
+
+  <function>
+    <description>客户意向状态名称</description>
+    <name>customerIntentionStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.CustomerIntentionStatus</function-class>
+    <function-signature>java.lang.String customerIntentionStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:customerIntentionStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>VIP客户状态列表</description>
+    <name>findVipFlagList</name>
+    <function-class>cn.com.beyo.erp.commons.status.VipFlag</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.VipFlag[] findVipFlagList()</function-signature>
+    <example>${erp:findVipFlagList}</example>
+  </function>
+
+  <function>
+    <description>VIP客户状态名称</description>
+    <name>getVipFlagName</name>
+    <function-class>cn.com.beyo.erp.commons.status.VipFlag</function-class>
+    <function-signature>java.lang.String getVipFlagName(java.lang.Integer)</function-signature>
+    <example>${erp:getVipFlagName(vipFlag)}</example>
+  </function>
+
+  <function>
+    <description>客户成单状态（母婴客户）</description>
+    <name>changeStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ChangeStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ChangeStatus[] changeStatusList()</function-signature>
+    <example>${erp:basePayStatusList}</example>
+  </function>
+
+  <function>
+    <description>客户成单状态（母婴客户）</description>
+    <name>changeStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ChangeStatus</function-class>
+    <function-signature>java.lang.String changeStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:basePayStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>审批状态列表（员工入职管理）</description>
+    <name>approvebStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ApprovebStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ApprovebStatus[] ApprovebStatusList()</function-signature>
+    <example>${erp:basePayStatusList}</example>
+  </function>
+
+  <function>
+    <description>审批状态名称（员工入职管理）</description>
+    <name>approvebStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ApprovebStatus</function-class>
+    <function-signature>java.lang.String approvebStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:basePayStatusName(status)}</example>
+  </function>
+
+
+  <function>
+    <description>宝宝有无状态列表</description>
+    <name>babyStatusesList</name>
+    <function-class>cn.com.beyo.erp.commons.status.BabyStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.BabyStatus[] babyStatusList()</function-signature>
+    <example>${erp:babyStatusList}</example>
+  </function>
+
+  <function>
+    <description>宝宝有无状态名称</description>
+    <name>babyStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.BabyStatus</function-class>
+    <function-signature>java.lang.String babyStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:babyStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>线索状态列表</description>
+    <name>findClueStatusList</name>
+    <function-class>cn.com.beyo.erp.commons.status.ClueStatus</function-class>
+    <function-signature>cn.com.beyo.erp.commons.status.ClueStatus[] findClueStatusList()</function-signature>
+    <example>${erp:findClueStatusList}</example>
+  </function>
+
+  <function>
+    <description>线索状态名称</description>
+    <name>getClueStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ClueStatus</function-class>
+    <function-signature>java.lang.String getClueStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:getClueStatusName(clueStatus)}</example>
+  </function>
+
+  <function>
+    <description>退款单状态名称</description>
+    <name>getAuditBillStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.AuditBillStatus</function-class>
+    <function-signature>java.lang.String getAuditBillStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:getAuditBillStatusName(clueStatus)}</example>
+  </function>
+
+  <function>
+    <description>服务类别名称</description>
+    <name>getTypeStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.TypeStatus</function-class>
+    <function-signature>java.lang.String getTypeStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:getTypeStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>退款类型名称</description>
+    <name>getRefundTypeStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.RefundTypeStatus</function-class>
+    <function-signature>java.lang.String getRefundTypeStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:getRefundTypeStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>退费操作记录状态名称</description>
+    <name>getRefundRecordStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.RefundRecordStatus</function-class>
+    <function-signature>java.lang.String getRefundRecordStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:getRefundRecordStatusName(status)}</example>
+  </function>
+
+  <function>
+    <description>付款状态名称</description>
+    <name>expenditureStatusName</name>
+    <function-class>cn.com.beyo.erp.commons.status.ExpenditureStatus</function-class>
+    <function-signature>java.lang.String expenditureStatusName(java.lang.Integer)</function-signature>
+    <example>${erp:expenditureStatusName(status)}</example>
+  </function>
+
+</taglib>
+
+
+

@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.school.classes.dao.ClassDao">
+
+	<sql id="simpleClassColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.class_name AS "className",
+		a.class_type AS "classType",
+		a.class_max_num AS "classMaxNum",
+		a.class_min_num AS "classMinNum",
+		a.class_real_num AS "classRealNum",
+		a.plan_begin_time AS "planBeginTime",
+		a.real_begin_time AS "realBeginTime",
+		a.plan_end_time AS "planEndTime",
+		a.real_end_time AS "realEndTime",
+		a.class_time AS "classTime",
+		a.make_lesson AS "makeLesson",
+		a.prepaid_amount AS "prepaidAmount",
+		a.tuition_amount AS "tuitionAmount",
+		a.miscellaneous_amount AS "miscellaneousAmount",
+		a.remark AS "remark",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status AS "status",
+		a.headteacher_id AS "headteacher.id",
+		a.instructor_id AS "instructor.id",
+		a.manager_id AS "manager.id",
+		a.supervisor_id AS "supervisor.id",
+		h.name AS "headteacher.name",
+		i.name AS "instructor.name",
+		m.name AS "manager.name",
+		s.name AS "supervisor.name"
+	</sql>
+
+	<sql id="schoolClassColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.class_name AS "className",
+		a.class_type AS "classType",
+		a.class_max_num AS "classMaxNum",
+		a.class_min_num AS "classMinNum",
+		a.class_real_num AS "classRealNum",
+		a.plan_begin_time AS "planBeginTime",
+		a.real_begin_time AS "realBeginTime",
+		a.plan_end_time AS "planEndTime",
+		a.real_end_time AS "realEndTime",
+		a.class_time AS "classTime",
+		a.prepaid_amount AS "prepaidAmount",
+		a.tuition_amount AS "tuitionAmount",
+		a.miscellaneous_amount AS "miscellaneousAmount",
+		a.remark AS "remark",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status AS "status",
+
+		cto.lesson_id AS "schoolClassToLesson.schoolClassLesson.id",
+		group_concat(distinct l.lesson_name ) AS "schoolClassToLesson.schoolClassLesson.lessonName",
+		l.teacher_ids AS "schoolClassToLesson.schoolClassLesson.teacherIds",
+		a.headteacher_id AS "headteacher.id",
+		a.instructor_id AS "instructor.id",
+		a.manager_id AS "manager.id",
+		a.supervisor_id AS "supervisor.id",
+		h.name AS "headteacher.name",
+		i.name AS "instructor.name",
+		m.name AS "manager.name",
+		s.name AS "supervisor.name",
+		stu.name AS "erpStudentEnroll.name"
+	</sql>
+
+	<sql id="simpleClassJoins">
+		LEFT JOIN sys_user h ON h.id = a.headteacher_id
+		LEFT JOIN sys_user i ON i.id = a.instructor_id
+		LEFT JOIN sys_user m ON m.id = a.manager_id
+		LEFT JOIN sys_user s ON s.id = a.supervisor_id
+	</sql>
+
+	<sql id="schoolClassJoins">
+		LEFT JOIN (school_class_to_lesson cto LEFT JOIN school_class_lesson l ON l.id= cto.lesson_id)
+			ON cto.class_id = a.id
+		LEFT JOIN sys_user h ON h.id = a.headteacher_id
+		LEFT JOIN sys_user i ON i.id = a.instructor_id
+		LEFT JOIN sys_user m ON m.id = a.manager_id
+		LEFT JOIN sys_user s ON s.id = a.supervisor_id
+		LEFT JOIN (
+				SELECT
+				stu.id,
+				stu.`name`,
+				scs.class_id,
+				stu.`status`
+				FROM
+				school_student stu
+				LEFT JOIN school_class_students scs ON scs.student_id =stu.id
+				GROUP BY
+				scs.class_id
+			) stu ON stu.class_id = a.id
+	</sql>
+
+	<sql id="allOrderColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.class_name AS "className",
+		a.class_type AS "classType",
+		a.class_max_num AS "classMaxNum",
+		a.class_min_num AS "classMinNum",
+		a.class_real_num AS "classRealNum",
+		a.plan_begin_time AS "planBeginTime",
+		a.real_begin_time AS "realBeginTime",
+		a.plan_end_time AS "planEndTime",
+		a.real_end_time AS "realEndTime",
+		a.class_time AS "classTime",
+		a.prepaid_amount AS "prepaidAmount",
+		a.tuition_amount AS "tuitionAmount",
+		a.miscellaneous_amount AS "miscellaneousAmount",
+		a.remark AS "remark",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status AS "status",
+		group_concat(distinct cl.lesson_name ) AS "schoolClassToLesson.schoolClassLesson.lessonName",
+		a.headteacher_id AS "headteacher.id",
+		su.name AS "headteacher.name"
+	</sql>
+
+	<sql id="allOrderJoins">
+		LEFT JOIN school_class_students cs on cs.class_id = a.id
+		LEFT JOIN sys_user su ON su.id = a.headteacher_id
+		LEFT JOIN school_class_to_lesson ctol on ctol.class_id = cs.id
+		LEFT JOIN school_class_lesson cl on ctol.lesson_id = cl.id
+		LEFT JOIN erp_order eo ON eo.id = cs.order_id
+	</sql>
+
+	<select id="get" resultType="SchoolClass">
+		SELECT
+		<include refid="simpleClassColumns"/>
+		FROM school_class a
+		<include refid="simpleClassJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getById" resultType="SchoolClass">
+		SELECT
+		<include refid="schoolClassColumns"/>
+		FROM school_class a
+		<include refid="schoolClassJoins"/>
+		WHERE a.id = #{id} AND cto.lesson_id= #{schoolClassToLesson.schoolClassLesson.id}
+	</select>
+
+	<select id="findList" resultType="SchoolClass">
+		SELECT
+		<include refid="schoolClassColumns"/>
+		FROM school_class a
+		<include refid="schoolClassJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			1=1 AND a.status != 1 AND a.make_lesson IS NULL
+			<if test="headteacher != null and headteacher.id != null">
+				AND a.headteacher_id = #{headteacher.id}
+			</if>
+			<if test="className != null and className !='' ">
+				AND a.class_name LIKE CONCAT('%', #{className}, '%')
+			</if>
+			<if test="schoolClassToLesson != null and schoolClassToLesson.schoolClassLesson != null and schoolClassToLesson.schoolClassLesson.lessonName != null and schoolClassToLesson.schoolClassLesson.lessonName != ''">
+				AND a.id IN (SELECT cto.class_id FROM school_class_to_lesson cto,school_class_lesson le WHERE cto.lesson_id=le.id AND le.lesson_name LIKE CONCAT('%', #{schoolClassToLesson.schoolClassLesson.lessonName}, '%'))
+			</if>
+			<if test="headteacher != null and headteacher.name != null and headteacher.name != ''">
+				AND h.name LIKE CONCAT('%', #{headteacher.name}, '%')
+			</if>
+			<if test="beginTime != null and beginTime != '' ">
+				AND date(a.plan_begin_time) &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND date(a.plan_begin_time) &lt;= #{endTime}
+			</if>
+
+			<if test="createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.plan_begin_time) &lt;= #{createTimeEnd}
+			</if>
+			<if test="realBeginTime != null and realBeginTime != '' ">
+				AND date(a.real_begin_time) &gt;= #{realBeginTime}
+			</if>
+			<if test="realEndTime != null and realEndTime != ''">
+				AND date(a.real_begin_time) &lt;= #{realEndTime}
+			</if>
+
+			<if test="createTimeStart != null and createTimeStart != '' ">
+				AND date(a.create_time) &gt;= #{createTimeStart}
+			</if>
+			<if test="createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.create_time) &lt;= #{createTimeEnd}
+			</if>
+
+			<if test="status != null and status != 9">
+				AND a.status = #{status}
+			</if>
+			<!-- 查询不是结业的 -->
+			<if test="status != null and status == 9">
+				AND a.status != 4
+			</if>
+			<if test="status == null">
+				AND a.status != 5
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+		GROUP BY a.id
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				,a.status ASC
+			</otherwise>
+		</choose>
+	</select>
+
+
+	<!--查询转班的班级列表-->
+	<select id="selectClassList" resultType="SchoolClass">
+		SELECT
+		a.id AS "id",
+		a.class_name AS "className",
+		a.class_type AS "classType",
+		a.tuition_amount AS "tuitionAmount",
+		a.headteacher_id AS "headteacher.id",
+		a.status AS "status",
+		a.class_real_num AS "classRealNum",
+		a.class_max_num AS "classMaxNum",
+		GROUP_CONCAT(scl.lesson_name) AS "schoolClassToLesson.schoolClassLesson.lessonName",
+		e.name AS "headteacher.name"
+		FROM school_class a
+		LEFT JOIN school_class_to_lesson sctl ON sctl.class_id = a.id
+		LEFT JOIN school_class_lesson scl ON scl.id = sctl.lesson_id
+		LEFT JOIN sys_user e ON e.id = a.headteacher_id
+		<where>
+			1 = 1 AND a.status != 4 AND a.status != 1 AND a.make_lesson IS NULL
+			<if test="className != null and className != '' ">
+				AND a.class_name LIKE concat ('%' ,#{className}, '%')
+			</if>
+			<if test="id != null">
+				AND a.id != #{id}
+			</if>
+			<if test="schoolClassToLesson != null and schoolClassToLesson.schoolClassLesson.lessonName != null and schoolClassToLesson.schoolClassLesson.lessonName != '' ">
+				AND scl.lesson_name LIKE concat ('%' ,#{schoolClassToLesson.schoolClassLesson.lessonName}, '%')
+			</if>
+			<if test="headteacher != null and headteacher.name != null and headteacher.name != '' ">
+				AND e.name LIKE concat ('%' ,#{headteacher.name}, '%')
+			</if>
+		</where>
+		GROUP BY a.id
+		ORDER BY a.create_time DESC
+	</select>
+
+	<select id="findAllList" resultType="SchoolClass">
+		SELECT
+		<include refid="schoolClassColumns"/>
+		FROM school_class a
+		<include refid="schoolClassJoins"/>
+		<where>
+			a.status = 0
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+
+
+	<!-- 查询班级列表绑定下拉框 @author Ashon @version 2017-06-06 -->
+	<select id="findClassList" resultType="SchoolClass">
+		SELECT
+		class_name,id
+		FROM school_class
+		WHERE status = 0
+		GROUP BY class_name
+		ORDER BY class_name
+	</select>
+
+	<!-- 查询未结业的班级列表 -->
+	<select id="selectClass" resultType="SchoolClass">
+		SELECT
+		a.class_name,a.id
+		FROM school_class a
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		WHERE status != 4
+		<!-- 条件过滤需要添加的过滤条件 -->
+		${sqlMap.dsf}
+		GROUP BY class_name
+		ORDER BY class_name
+	</select>
+
+	<insert id="insert">
+		INSERT INTO school_class(
+		id,
+		platform_id,
+		class_name,
+		class_type,
+		headteacher_id,
+		instructor_id,
+		manager_id,
+		supervisor_id,
+		class_max_num,
+		class_min_num,
+		class_real_num,
+		plan_begin_time,
+		real_begin_time,
+		plan_end_time,
+		real_end_time,
+		class_time,
+		make_lesson,
+		prepaid_amount,
+		tuition_amount,
+		miscellaneous_amount,
+		remark,
+		create_time,
+		create_user,
+		status,
+		current_version
+		) VALUES (
+		#{id},
+		#{platformId},
+		#{className},
+		#{classType},
+		#{headteacher.id},
+		#{instructor.id},
+		#{manager.id},
+		#{supervisor.id},
+		#{classMaxNum},
+		#{classMinNum},
+		#{classRealNum},
+		#{planBeginTime},
+		#{realBeginTime},
+		#{planEndTime},
+		#{realEndTime},
+		#{classTime},
+		#{makeLesson},
+		#{prepaidAmount},
+		#{tuitionAmount},
+		#{miscellaneousAmount},
+		#{remark},
+		#{createTime},
+		#{createUser},
+		#{status},
+		#{currentVersion}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE school_class SET
+		platform_id = #{platformId},
+		class_name = #{className},
+		class_type = #{classType},
+		headteacher_id = #{headteacher.id},
+		instructor_id = #{instructor.id},
+		manager_id = #{manager.id},
+		supervisor_id = #{supervisor.id},
+		class_max_num = #{classMaxNum},
+		class_min_num = #{classMinNum},
+		class_real_num = #{classRealNum},
+		plan_begin_time = #{planBeginTime},
+		real_begin_time = #{realBeginTime},
+		plan_end_time = #{planEndTime},
+		real_end_time = #{realEndTime},
+		class_time = #{classTime},
+		prepaid_amount = #{prepaidAmount},
+		tuition_amount = #{tuitionAmount},
+		miscellaneous_amount = #{miscellaneousAmount},
+		remark = #{remark},
+		create_time = #{createTime},
+		create_user = #{createUser},
+		status = #{status}
+		<if test="currentVersion != null">
+			,
+			current_version = current_version + 1
+		</if>
+		WHERE id = #{id}
+		<if test="currentVersion != null">
+		AND current_version = #{currentVersion}
+		</if>
+	</update>
+
+	<update id="updateClassRealNumById">
+		UPDATE school_class SET
+		class_real_num = #{classRealNum}
+		<if test="currentVersion != null">
+			,
+			current_version = current_version + 1
+		</if>
+		WHERE id = #{id}
+		<if test="currentVersion != null">
+			AND current_version = #{currentVersion}
+		</if>
+	</update>
+
+	<update id="delete">
+		UPDATE school_class a SET
+		a.status = #{status}
+		WHERE a.id = #{id}
+	</update>
+
+	<select id="selByLearningTeacherId">
+
+	</select>
+
+	<update id="updateStatus">
+		UPDATE school_class a SET
+		a.status = #{status}
+		<if test="realBeginTime != null and realBeginTime != '' ">
+			,a.real_begin_time = #{realBeginTime}
+		</if>
+		<if test="realEndTime != null and realEndTime != '' ">
+			,a.real_end_time = #{realEndTime}
+		</if>
+		WHERE a.id = #{id}
+	</update>
+
+
+	<!--升降级管理：员工培训信息-->
+	<select id="findClassListByEmployee" resultType="SchoolClass">
+        SELECT
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.class_name AS "className",
+		a.class_type AS "classType",
+		a.class_max_num AS "classMaxNum",
+		a.class_min_num AS "classMinNum",
+		a.class_real_num AS "classRealNum",
+		a.plan_begin_time AS "planBeginTime",
+		a.real_begin_time AS "realBeginTime",
+		a.plan_end_time AS "planEndTime",
+		a.real_end_time AS "realEndTime",
+		a.class_time AS "classTime",
+		a.prepaid_amount AS "prepaidAmount",
+		a.tuition_amount AS "tuitionAmount",
+		a.miscellaneous_amount AS "miscellaneousAmount",
+		a.remark AS "remark",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status AS "status",
+		a.headteacher_id AS "headteacher.id",
+		ee.name AS "headteacher.name",
+		GROUP_CONCAT(e.lesson_name) AS "lesson_names"
+		FROM school_class a
+		left join sys_user ee on ee.id = a.headteacher_id
+		left join school_class_students b on b.class_id = a.id
+		left join school_student stu on stu.id = b.student_id
+        left join school_class_to_lesson d on d.class_id = a.id
+		left join school_class_lesson e on d.lesson_id = e.id
+		WHERE stu.employe_id = '3'
+        GROUP BY a.id
+	</select>
+
+	<select id="findClassByOrderId" resultType="SchoolClass">
+		SELECT
+		<include refid="allOrderColumns"/>
+		FROM school_class a
+		<include refid="allOrderJoins"/>
+		<where>
+			1=1 AND eo.id = #{id}
+		</where>
+	</select>
+
+	<!--学员信息（报读班级）-->
+	<select id="findClassListByStudentId" resultType="SchoolClass">
+		SELECT
+		a.id AS "id",
+		scs.apply_time AS "erpStudentEnroll.schoolClassStudents.applyTime",
+		a.class_name AS "className",
+		GROUP_CONCAT(DISTINCT scl.lesson_name) AS "schoolClassToLesson.schoolClassLesson.lessonName",
+		a.headteacher_id AS "headteacher.id",
+		a.tuition_amount AS "tuitionAmount",
+		su.name AS "headteacher.name",
+		a.plan_begin_time AS "planBeginTime",
+		a.real_begin_time AS "realBeginTime",
+		a.status AS "status"
+		FROM school_class a
+		LEFT JOIN school_class_students scs ON scs.class_id = a.id
+		LEFT JOIN school_student stu ON stu.id = scs.student_id
+		LEFT JOIN school_class_to_lesson sctl ON sctl.class_id = a.id
+		LEFT JOIN school_class_lesson scl ON scl.id = sctl.lesson_id
+		LEFT JOIN sys_user su ON su.id = headteacher_id
+		<where>
+			1=1 and stu.id = #{id}
+
+		</where>
+		GROUP BY a.id
+
+	</select>
+
+	<!-- 查询可以合并排课的班级 -->
+	<select id="selectCourseSchedule" resultType="SchoolClass">
+		SELECT
+		<include refid="simpleClassColumns"/>
+		FROM school_class a
+		<include refid="simpleClassJoins"/>
+		<where>
+			AND (a.status = 0/*新开班*/ or a.status = 2 /*已排课*/ or a.status = 3 /*上课中*/)
+			AND a.id in (
+				select class_id from school_class_to_lesson where lesson_id = #{scheduleList[0].lessonId}
+				and status = 0
+			)
+			AND a.id not in
+			(
+				select class_id from school_class_schedule
+				where status != 2
+					  and (
+						  <foreach collection="scheduleList" item="schedule" separator="or">
+								(
+								lesson_id = #{schedule.lessonId}
+								and
+								teacher_id = #{schedule.teacherId}
+								and
+								classroom_id = #{schedule.roomId}
+								and
+								begin_time = #{schedule.startTime}
+								and
+								end_time = #{schedule.endTime}
+								)
+						  </foreach>
+					  )
+			)
+
+		</where>
+	</select>
+</mapper>

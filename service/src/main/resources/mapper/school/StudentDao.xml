@@ -1,0 +1,861 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.school.student.dao.StudentDao">
+
+	<sql id="StudentAllEnrollColumns">
+	  	a.id AS "id",
+		a.platform_id AS "platformId",
+		a.occupation_id AS "occupationId",
+		a.areas_id AS "areas.id",
+		a.supplier_id AS "supplierId",
+		a.student_type AS "studentType",
+		a.student_status AS "studentStatus",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.phone AS "phone",
+		a.student_number AS "studentNumber",
+		a.date_birth AS "dateBirth",
+		a.stu_number AS "stuNumber",
+		a.stu_number_address AS "stuNumberAddress",
+		a.native_place AS "nativePlace.id",
+		r.name AS "nativePlace.name",
+		a.stu_city AS "stuCity.id",
+		rr.name AS "stuCity.name",
+		a.qq_number AS "qqNumber",
+		a.dormitory AS "dormitory",
+		a.emergency_contact AS "emergencyContact",
+		a.urgency_phone AS "urgencyPhone",
+		a.tuition_favorable AS "tuitionFavorable",
+		a.class_time_id AS "classTimeId",
+		a.teacher_id AS "teacher.id",
+		a.follow_id AS "follow.id",
+		f.name AS "follow.name",
+		a.education AS "education",
+		a.status AS "status",
+		a.predict_apply_time AS "predictApplyTime",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.invoice_status AS "invoiceStatus",
+		a.remark AS "remark",
+		l.lesson_name AS "schoolClassStudents.schoolClass.schoolClassToLesson.schoolClassLesson.lessonName",
+		t.name AS "teacher.name",
+		a.learning_teacher_id AS "learningTeacher.id",
+		j.name AS "learningTeacher.name",
+		a.employe_id AS "employee.name",
+		s.tuition_amount AS "schoolClassStudents.schoolClass.tuitionAmount",/*学费*/
+		s.status AS "schoolClassStudents.schoolClass.status",/*班级状态*/
+		s.class_name AS "schoolClassStudents.schoolClass.className",
+		s.miscellaneous_amount AS "schoolClassStudents.schoolClass.miscellaneousAmount",
+		s.real_begin_time AS "schoolClassStudents.schoolClass.realBeginTime",
+		scs.class_id AS "schoolClassStudents.schoolClass.id",
+		scs.apply_time AS "schoolClassStudents.applyTime",
+		scs.status AS "schoolClassStudents.status",
+		a.communication_id AS "communication.id",
+		erpt.status AS "communication.status",
+		a.customer_resource_id AS "customerResource.id",
+		c.customer_name AS "customerResource.customerName",
+		err.financial_code AS "order.receivableBill.financialCode",
+		edlh.leave_time AS "dormLiveHistory.leaveTime",/*退房时间*/
+		edsl.live_time AS "dormStudentLive.liveTime",/*入住时间*/
+		su.id AS "user.id",
+		su.name AS "user.name",
+		a.referrer_id AS "referrer.id",
+		soo.name AS "referrer.name",
+		suser.id AS "schoolClassStudents.schoolClass.headteacher.id",
+		suser.name AS "schoolClassStudents.schoolClass.headteacher.name",
+        suser.phone AS "schoolClassStudents.schoolClass.headteacher.phone"
+	</sql>
+
+	<sql id="FindStudentEnrollColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.phone AS "phone",
+		a.occupation_id AS "occupationId",
+		a.teacher_id AS "teacher.id",
+		a.student_type AS "studentType",
+		a.remark AS "remark",
+		t.name AS "teacher.name",
+		a.follow_id AS "follow.id",
+		f.name AS "follow.name",
+		a.communication_id AS "communication.id",
+		erpt.status AS "communication.status",
+		a.create_time AS "createTime",
+		a.customer_resource_id AS "customerResource.id",
+		c.customer_name AS "customerResource.customerName"
+	</sql>
+
+	<sql id="findStudentJoins">
+		LEFT JOIN sys_user t on t.id  = a.teacher_id
+		LEFT JOIN sys_user f on f.id  = a.follow_id
+		LEFT JOIN erp_customer_resource c ON c.id = a.customer_resource_id /*客户来源*/
+		LEFT JOIN erp_communication erpt on erpt.id = a.communication_id
+	</sql>
+
+	<sql id="studentJoins">
+		LEFT JOIN sys_user t on t.id  = a.teacher_id
+		LEFT JOIN sys_user f on f.id  = a.follow_id
+		LEFT JOIN sys_user j on j.id  = a.learning_teacher_id
+		LEFT JOIN sys_area r on r.id = a.native_place
+		LEFT JOIN sys_area rr on rr.id = a.stu_city
+		LEFT JOIN school_class_students scs on a.id = scs.student_id/*新增多个班级中间表*/
+		LEFT JOIN school_class_to_lesson sctl ON scs.class_id = sctl.lesson_id/*班级课程中间表*/
+		LEFT JOIN erp_customer_resource c ON c.id = a.customer_resource_id /*客户来源*/
+		LEFT JOIN school_class_lesson l ON l.id = sctl.lesson_id
+		LEFT JOIN school_class s on s.id  = scs.class_id
+		LEFT JOIN erp_communication erpt on erpt.id = a.communication_id
+		LEFT JOIN school_area e on e.id  = a.areas_id
+		LEFT JOIN erp_order eo on a.id = eo.student_id
+		LEFT JOIN erp_receivable_bill err on err.order_id = eo.id
+		LEFT JOIN sys_user soo ON soo.id = a.referrer_id
+		LEFT JOIN erp_dorm_live_history edlh ON edlh.live_student_id = a.id/*退房记录表*/
+		LEFT JOIN erp_dorm_student_live edsl ON edsl.student_enroll_id = a.id /*入住记录*/
+		LEFT JOIN sys_user su ON su.id = a.create_user/*创建人*/
+		LEFT JOIN sys_user suser ON suser.id = s.headteacher_id /*班主任*/
+	</sql>
+
+	<!-- 缺勤次数 课程总数  @Ashon -->
+	<sql id="scheduleColumns">
+		,(SELECT COUNT(*) FROM school_class_schedule ssss
+		WHERE ssss.class_id = scs.class_id
+		<if test="schoolClassStudents != null and schoolClassStudents.classSchedule != null and schoolClassStudents.classSchedule.status != null ">
+			AND ssss.status = #{schoolClassStudents.classSchedule.status}
+		</if>
+		) AS "schoolClassStudents.classSchedule.lessonSignNum", /*指定班上课次数*/
+		(SELECT COUNT(*) FROM school_class_lesson_sign_history hhhh LEFT JOIN school_class_schedule ssss ON ssss.id = hhhh.schedule_id
+		WHERE hhhh.student_id = a.id and hhhh.status =1
+		<if test="schoolClassStudents != null and schoolClassStudents.schoolClass.id != null ">
+			AND ssss.class_id = scs.class_id
+		</if>
+		) AS "classLessonSignHistory.absenceNum"/*某班缺勤次数*/
+
+		/*,(SELECT COUNT(*) FROM school_class_schedule ssss WHERE ssss.class_id = scs.class_id AND date(ssss.begin_time) &lt;= NOW() )
+		AS "schoolClassStudents.classSchedule.lessonSignNum", *//*课程总次数*//*
+		(SELECT COUNT(*) FROM school_class_lesson_sign_history hhhh WHERE hhhh.student_id = a.id)
+		AS "classLessonSignHistory.absenceNum"*//*缺勤次数*/
+		/*,COUNT(sch.class_id) AS "schoolClassStudents.schoolClassSchedule.lessonSignNum", *//*课程总次数*//*
+		COUNT(signhi.student_id) AS "classLessonSignHistory.absenceNum"*//*缺勤次数*/
+		<!--,(SELECT IFNULL(ssss.sign_count,0) FROM school_class_schedule ssss
+			WHERE ssss.class_id = scs.class_id
+			<if test="schoolClassStudents != null and schoolClassStudents.classSchedule != null and schoolClassStudents.classSchedule.status != null ">
+				AND ssss.status = #{schoolClassStudents.classSchedule.status}
+			</if>
+		) AS "schoolClassStudents.classSchedule.signCount" /*指定班上课签到次数*/-->
+	</sql>
+
+
+	<!--单个费用回显-->
+	<select id="selCount" resultType="java.util.LinkedHashMap">
+		SELECT
+		tuition_amount,miscellaneous_amount
+		FROM school_class
+		WHERE id = #{id}
+	</select>
+
+	<!--多个费用的回显-->
+	<select id="selCountIds" resultType="java.util.LinkedHashMap" parameterType="java.lang.Long">
+		SELECT
+		tuition_amount,miscellaneous_amount,
+		FROM school_class
+		WHERE id 	in
+		<foreach item="id" index="index" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="getByEmpId" resultType="Student">
+		SELECT
+		a.id,
+		a.employe_id AS "employee.id"
+		FROM school_student a
+		WHERE a.employe_id = #{employee.id}
+		<if test="status != null">
+			AND a.status = #{status}
+		</if>
+	</select>
+
+	<select id="get" resultType="Student">
+		SELECT
+		<include refid="StudentAllEnrollColumns"/>
+		FROM school_student a
+		<include refid="studentJoins"/>
+		WHERE a.id = #{id}
+		GROUP BY a.id
+	</select>
+
+	<select id="findList" resultType="Student">
+		SELECT
+		<include refid="StudentAllEnrollColumns"/>
+		FROM school_student a
+		<include refid="studentJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			1=1 AND a.status != 1
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+
+			/*客户状态*/
+			<if test="communication != null and communication.status != -1">
+				AND erpt.status = #{communication.status}
+			</if>
+			/*学生姓名、手机号码*/
+			<if test="name != null and name != '' ">
+				AND ( a.name LIKE CONCAT('%', #{name}, '%') OR a.phone LIKE CONCAT('%', #{name}, '%'))
+			</if>
+			/*职业方向*/
+			<if test="occupationId != null and occupationId != '' ">
+				AND a.occupation_id like  concat('%', #{occupationId},'%')
+			</if>
+			/*创建时间结束时间*/
+			<if test="createTimeStart != null and createTimeStart != '' and createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.create_time) BETWEEN #{createTimeStart} AND #{createTimeEnd}
+			</if>
+			/*招聘老师*/
+			<if test="teacher != null and teacher.name != null and teacher.name != ''">
+				AND t.name LIKE CONCAT('%', #{teacher.name}, '%')
+			</if>
+			/*跟进人*/
+			<if test="follow != null and follow.name != null and follow.name != ''">
+				AND f.name LIKE CONCAT('%', #{follow.name}, '%')
+			</if>
+
+			/*学员类型*/
+			<if test="studentType != null">
+				AND a.student_type = #{studentType}
+			</if>
+			/*报读班级*/
+			<if test="schoolClassStudents != null and schoolClassStudents.schoolClass != null and schoolClassStudents.schoolClass.className != null and schoolClassStudents.schoolClass.className != ''">
+				AND s.class_name LIKE CONCAT('%', #{schoolClassStudents.schoolClass.className}, '%')
+			</if>
+			<if test="schoolClassStudents != null and schoolClassStudents.schoolClass != null and schoolClassStudents.schoolClass.id != null ">
+				AND scs.class_id = #{schoolClassStudents.schoolClass.id}
+			</if>
+			<if test="schoolClassStudents != null and schoolClassStudents.status != null">
+				AND scs.status = #{schoolClassStudents.status}
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+		GROUP BY a.id
+		ORDER BY a.create_time DESC
+	</select>
+
+	<select id="findStudentListAndFollow" resultType="Student">
+		SELECT
+			a.id AS "id",
+			a.name AS "name",
+			a.sex AS "sex",
+			a.phone AS "phone",
+			a.occupation_id AS "occupationId",
+			a.teacher_id AS "teacher.id",
+			a.student_type AS "studentType",
+			t.name AS "teacher.name",
+			a.follow_id AS "follow.id",
+			f.name AS "follow.name",
+			a.communication_id AS "communication.id",
+			<!-- 如果生源没有沟通记录,客户状态默认为待跟进 -->
+			(case when erpt.STATUS is null then 1 else erpt.STATUS end) AS "communication.status",
+			a.create_time AS "createTime",
+			a.customer_resource_id AS "customerResource.id",
+			a.remark AS "remark",
+			a.create_user AS "createUser",
+			c.customer_name AS "customerResource.customerName"
+		FROM school_student a
+		<include refid="findStudentJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			1 = 1
+			<if test="tagFlag == 1">
+				AND a.status != 1
+			</if>
+			<if test="tagFlag == 2">
+				and a.follow_id != ''
+				AND a.status != 1
+			</if>
+			<if test="tagFlag == 3">
+				and ISNULL(a.follow_id)
+				AND a.status != 1
+			</if>
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+			<if test="tagFlag == 4">
+				AND a.status != 1
+			</if>
+			<if test="follow != null and follow.id != null">
+				AND a.follow_id = #{follow.id}
+			</if>
+			/*客户状态*/
+			<if test="communication != null and communication.status != -1 and communication.status != 1">
+				AND erpt.status = #{communication.status}
+			</if>
+			<!-- 如果查询客户状态为待跟进的话则要把客户状态为待跟进的和沟通记录的数据都查询 -->
+			<if test="communication != null and communication.status == 1">
+				AND ( erpt.status = 1 OR erpt.status is null )
+			</if>
+			/*学生姓名、手机号码*/
+			<if test="name != null and name != '' ">
+				AND ( a.name LIKE CONCAT('%', #{name}, '%') OR a.phone LIKE CONCAT('%', #{name}, '%'))
+			</if>
+			/*职业方向*/
+			<if test="occupationId != null and occupationId != '' ">
+				AND a.occupation_id like  concat('%', #{occupationId},'%')
+			</if>
+			/*创建时间结束时间*/
+			<if test="createTimeStart != null and createTimeStart != '' and createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.create_time) BETWEEN #{createTimeStart} AND #{createTimeEnd}
+			</if>
+			/*招聘老师*/
+			<if test="teacher != null and teacher.name != null and teacher.name != ''">
+				AND t.name LIKE CONCAT('%', #{teacher.name}, '%')
+			</if>
+			/*跟进人*/
+			<if test="follow != null and follow.name != null and follow.name != ''">
+				AND f.name LIKE CONCAT('%', #{follow.name}, '%')
+			</if>
+
+			/*学员类型*/
+			<if test="studentType != null">
+				AND a.student_type = #{studentType}
+			</if>
+		</where>
+		GROUP BY a.id
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="Student">
+		SELECT
+		<include refid="StudentAllEnrollColumns"/>
+		FROM school_student a
+		<include refid="studentJoins"/>
+		<where>
+			<if test="schoolClassStudents != null and schoolClassStudents.schoolClass != null and schoolClassStudents.schoolClass.id != null">
+				AND scs.class_id = #{schoolClassStudents.schoolClass.id}
+			</if>
+			<if test="schoolClassStudents != null and schoolClassStudents.status != null">
+				AND scs.status = #{schoolClassStudents.status}
+			</if>
+			<if test="studentStatus != null">
+				AND a.student_status = #{studentStatus}
+			</if>
+			<if test="id != null">
+				AND a.id = #{id}
+			</if>
+			<if test="notSelectClassId != null">
+				AND scs.class_id != #{notSelectClassId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findClassStudentInfo" resultType="Student">
+		SELECT
+		<include refid="StudentAllEnrollColumns"/>
+		<include refid="scheduleColumns"/>
+		FROM school_student a
+		<include refid="studentJoins"/>
+		<where>
+			a.status != 1
+			<if test="status != null and status != -1">
+				AND a.status = #{status}
+			</if>
+			/*学生姓名，编号*/
+			<if test="name != null and name != '' ">
+				AND ( a.name LIKE CONCAT('%', #{name}, '%') OR a.student_number LIKE CONCAT('%', #{name}, '%') )
+			</if>
+			/*职业方向*/
+			<if test="occupationId != null and occupationId != '' ">
+				AND a.occupation_id like  concat('%', #{occupationId},'%')
+			</if>
+			/*跟进人*/
+			<if test="follow != null and follow.name != null and follow.name != ''">
+				AND f.name LIKE CONCAT('%', #{follow.name}, '%')
+			</if>
+			<if test="schoolClassStudents != null and schoolClassStudents.schoolClass != null and schoolClassStudents.schoolClass.id != null ">
+				AND scs.class_id = #{schoolClassStudents.schoolClass.id}
+			</if>
+			/*学员类型*/
+			<if test="studentType != null">
+				AND a.student_type = #{studentType}
+			</if>
+			/*客户状态*/
+			<if test="communication != null and communication.status != null and communication.status != '' ">
+				AND erpt.status = #{communication.status}
+			</if>
+			<if test="schoolClassStudents != null and schoolClassStudents.status != null">
+				AND scs.status = #{schoolClassStudents.status}
+			</if>
+			<if test="filter != null and filter==1">
+				AND (scs.status = 2 OR scs.status = 3)
+			</if>
+		</where>
+		GROUP BY a.id
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+
+	</select>
+
+	<select id="findClassStudentListBySchedule" resultType="Student">
+		SELECT
+
+		<include refid="StudentAllEnrollColumns"/>
+
+		FROM school_class_students scss,school_student a
+
+		<include refid="studentJoins"/>
+		WHERE
+		scss.student_id = a.id
+		/*AND a.status=2*/
+		AND scss.status = 0
+		AND scss.class_id = #{schoolClass.id}
+
+		GROUP BY a.id
+	</select>
+
+	<select id="shortss" resultType="java.lang.Long">
+		SELECT max(id)
+		FROM school_student
+	</select>
+
+	<!-- @athour macheng findPageForCertificate 颁发证书 -->
+	<select id="findPageForCertificate" resultType="Student">
+		SELECT
+		a.id AS "id",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.phone AS "phone",
+		a.student_number AS "studentNumber",
+		a.status AS "status",
+		a.stu_number AS "stuNumber",
+		a.remark AS "remark",
+		group_concat( s.class_name ) AS "schoolClassStudents.schoolClass.className"
+		FROM school_student a
+		LEFT JOIN school_class_students scs on a.id = scs.student_id
+		LEFT JOIN school_class s on s.id  = scs.class_id
+		where 1=1
+		GROUP BY a.id
+	</select>
+
+	<select id="findPastStudent" resultType="Student">
+		SELECT
+		<include refid="FindStudentEnrollColumns"/>
+		FROM school_student a
+		<include refid="findStudentJoins"/>
+		LEFT JOIN school_class_students scs ON a.id = scs.student_id
+		LEFT JOIN school_class sc ON sc.id = scs.class_id
+		<where>
+			<if test="schoolClass != null and schoolClass.classType != null">
+				AND sc.class_type = #{schoolClass.classType}
+			</if>
+			<if test="schoolClassStudents != null and schoolClassStudents.filter != null">
+				AND (scs.status = 2 or scs.status = 3)
+			</if>
+		</where>
+		group by a.id
+	</select>
+
+	<insert id="insert">
+		INSERT INTO school_student(
+		id,
+		employe_id,
+		student_type,
+		name,
+		sex,
+		phone,
+		student_number,
+		occupation_id,
+		date_birth,
+		stu_number,
+		stu_number_address,
+		native_place,
+		stu_city,
+		qq_number,
+		dormitory,
+		emergency_contact,
+		urgency_phone,
+		class_time_id,
+		education,
+		predict_apply_time,
+		status,
+		create_user,
+		create_time,
+		teacher_id,
+		follow_id,
+		supplier_id,
+		areas_id,
+		referrer_id,
+		customer_resource_id,
+		communication_id,
+		student_status,
+		remark
+		) VALUES (
+		#{id},
+		#{employee.id},
+		#{studentType},
+		#{name},
+		#{sex},
+		#{phone},
+		#{studentNumber},
+		#{occupationId},
+		#{dateBirth},
+		#{stuNumber},
+		#{stuNumberAddress},
+		#{nativePlace.id},
+		#{stuCity.id},
+		#{qqNumber},
+		#{dormitory},
+		#{emergencyContact},
+		#{urgencyPhone},
+		#{classTimeId},
+		#{education},
+		#{predictApplyTime},
+		#{status},
+		#{createUser},
+		#{createTime},
+		#{teacher.id},
+		#{follow.id},
+		#{supplierId},
+		#{areas.id},
+		#{referrer.id},
+		#{customerResource.id},
+		#{communication.id},
+		#{studentStatus},
+		#{remark}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE school_student SET
+
+		<if test="null!=employee and null!=employee.id">
+			employe_id = #{employee.id},/*员工报名ID*/
+		</if>
+
+		name = #{name},/*学生姓名*/
+		sex = #{sex},/*性别*/
+		student_number = #{studentNumber},/*学号*/
+		date_birth = #{dateBirth},/*出生日期*/
+		phone = #{phone},/*手机号*/
+		stu_number = #{stuNumber},/*身份证号*/
+		<if test="stuNumberAddress != null and stuNumberAddress != ''">
+			stu_number_address = #{stuNumberAddress},/*身份证号地址*/
+		</if>
+		native_place = #{nativePlace.id},/*籍贯*/
+		education = #{education},/*学历*/
+		stu_city = #{stuCity.id},/*生活城市*/
+		qq_number = #{qqNumber},/*QQ号码*/
+		emergency_contact = #{emergencyContact},/*紧急联系人*/
+		urgency_phone = #{urgencyPhone},/*紧急联系人电话*/
+		areas_id = #{areas.id},/*所属校区*/
+		<if test="null!=supplierId">
+			supplier_id = #{supplierId},/*供应商*/
+		</if>
+		<if test="null!=teacher and null!=teacher.id">
+			teacher_id = #{teacher.id},/*招聘老师*/
+		</if>
+		<if test="null!=teacher and null!=teacher.id">
+			referrer_id = #{referrer.id},/*推荐人*/
+		</if>
+		<if test="null!=follow and null!=follow.id">
+			follow_id = #{follow.id},/*跟进人*/
+		</if>
+		student_type = #{studentType},/*学员类型*/
+		<if test="null!=predictApplyTime">
+			predict_apply_time = #{predictApplyTime},/*预计报名时间*/
+		</if>
+
+		dormitory = #{dormitory},/*学员住宿状态*/
+		<if test="null!=learningTeacher and null!=learningTeacher.id">
+			learning_teacher_id = #{learningTeacher.id},/*学管师*/
+		</if>
+
+
+
+		status = #{status},/*学员状态*/
+		<if test="null!=communication and null!=communication.id">
+			communication_id = #{communication.id},
+		</if>
+
+		occupation_id = #{occupationId},  /*职业方向*/
+		<if test="null!=customerResource and null!=customerResource.id">
+			customer_resource_id = #{customerResource.id},/*招生来源*/
+		</if>
+		remark = #{remark} /*备注*/
+		WHERE id = #{id}
+	</update>
+
+
+	<!--新增一条沟通记录时修改学生的客户状态-->
+	<update id="updateCommunication">
+		UPDATE school_student SET
+		communication_id = #{communication.id}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 改变指定班级所有学员状态 @author Ashon -->
+	<update id="updateStatusByClass">
+		UPDATE school_student a,school_class_students scs
+		SET a.`student_status` = #{studentStatus}
+		WHERE a.id=scs.student_id and scs.class_id = #{schoolClassStudents.schoolClass.id}
+		<!-- 开班操作 带入条件为  报名未开班 -->
+		<if test="schoolClassStudents != null and schoolClassStudents.status != null">
+			AND scs.status = #{schoolClassStudents.status}
+		</if>
+	</update>
+
+	<update id="delete">
+		UPDATE school_student SET
+		status = #{status}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateStudentStatus">
+		UPDATE school_student SET
+		student_status = #{studentStatus}
+		WHERE id = #{id}
+	</update>
+
+	<select id="findInfoList" resultType="Student">
+		SELECT
+		a.id AS "id",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.phone AS "phone",
+		a.stu_number AS "stuNumber",
+		a.stu_number_address AS "stuNumberAddress",
+		a.student_number AS "studentNumber",
+		a.date_birth AS "dateBirth",
+		a.status AS "status",
+		a.student_status AS "studentStatus",
+		a.remark AS "remark",
+		a.create_user AS "createUser",
+		/*group_concat(distinct sc.class_name ) AS "schoolClassStudents.schoolClass.className",
+		group_concat(distinct scl.lesson_name ) AS "schoolClassStudents.schoolClass.schoolClassToLesson.schoolClassLesson.lessonName",*/
+		e.name AS "learningTeacher.name",/*学管师*/
+		sct.apply_time AS "schoolClassStudents.applyTime",
+		sct.status AS "schoolClassStudents.status"/*班级学生中间表状态*/
+
+
+		FROM school_student a
+		LEFT JOIN sys_user e ON e.id = a.learning_teacher_id/*学管师*/
+		LEFT JOIN school_class_students sct ON sct.student_id = a.id/*学生班级中间表*/
+		/*LEFT JOIN school_class_to_lesson sctl ON sctl.class_id = sc.id*//*班级课程中间表*/
+		/*LEFT JOIN school_class_lesson scl ON scl.id = sctl.lesson_id*//*课程表*/
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+
+		<where>
+
+			<if test="studentType != null and studentType != null">
+				AND a.student_type = #{studentType}
+			</if>
+			/*学生姓名、学号、手机号码*/
+			<if test="name != null and name != '' ">
+				AND ( a.name LIKE CONCAT('%', #{name}, '%') OR a.student_number LIKE CONCAT('%', #{name}, '%')  OR a.phone LIKE CONCAT('%', #{name}, '%'))
+			</if>
+			/*报读班级*/
+			<if test="schoolClassStudents != null and schoolClassStudents.schoolClass.className != null and schoolClassStudents.schoolClass.className != ''">
+				AND sc.class_name LIKE CONCAT('%', #{schoolClassStudents.schoolClass.className}, '%')
+			</if>
+			<if test="schoolClassStudents != null and schoolClassStudents.schoolClass.id != null ">
+				AND sct.class_id = #{schoolClassStudents.schoolClass.id}
+			</if>
+
+			/*学管师*/
+			<if test="learningTeacher != null and learningTeacher.name != null and learningTeacher.name != ''">
+				AND e.name LIKE CONCAT('%', #{learningTeacher.name}, '%')
+			</if>
+
+			/*报名时间*/
+			<if test="schoolClassStudents != null and schoolClassStudents.applyTimeStart != null and schoolClassStudents.applyTimeStart != '' and schoolClassStudents.applyTimeEnd != null and schoolClassStudents.applyTimeEnd != '' ">
+				AND date(sct.apply_time) BETWEEN #{schoolClassStudents.applyTimeStart} AND #{schoolClassStudents.applyTimeEnd}
+			</if>
+			/*学员状态*/
+			<if test="studentStatus != null">
+				AND a.student_status = #{studentStatus}
+			</if>
+
+			/*性别*/
+			<if test="sex != null">
+				AND a.sex = #{sex}
+			</if>
+
+			<if test="name != null and name != '' ">
+				AND a.name LIKE CONCAT('%' ,#{name}, '%')
+			</if>
+
+			/*学号*/
+			<if test="studentNumber != null and studentNumber != '' ">
+				AND a.student_number = #{studentNumber}
+			</if>
+			and a.status != 1
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+		order by sct.apply_time desc
+	</select>
+
+	<!--查询跟进人列表-->
+	<select id="findStudentById" resultType="Student">
+		SELECT
+		<include refid="StudentAllEnrollColumns"/>
+		FROM school_student a
+		<include refid="studentJoins"/>
+		WHERE a.id = #{id} GROUP  BY a.id
+	</select>
+
+	<!--查询学管师列表-->
+	<select id="findStudentInfoById" resultType="Student">
+		SELECT
+		<include refid="StudentAllEnrollColumns"/>
+		FROM school_student a
+		<include refid="studentJoins"/>
+		WHERE a.id = #{id} GROUP  BY a.id
+	</select>
+
+	<!--jbox退班学员列表查询-->
+	<select id="findQuitList" resultType="Student">
+		SELECT
+		a.name AS "name",/*姓名*/
+		a.sex AS "sex",/*性别*/
+		a.student_number AS "studentNumber",/*学号*/
+		a.phone AS "phone",/*手机号*/
+		a.stu_number AS "stuNumber",/*身份证号*/
+		a.stu_number_address AS "stuNumberAddress",/*身份证号地址*/
+		a.status AS "status",/*学生状态*/
+		sc.class_name AS "schoolClassStudents.schoolClass.className",/*班级名称*/
+		GROUP_CONCAT(scl.lesson_name) AS "schoolClassStudents.schoolClass.schoolClassToLesson.schoolClassLesson.lessonName",/*课程名称*/
+		ee.name AS "schoolClassStudents.schoolClass.headteacher.name",/*班主任*/
+		sc.tuition_amount AS "schoolClassStudents.schoolClass.tuitionAmount",/*学费*/
+		a.tuition_favorable AS "tuitionFavorable",/*学费优惠*/
+		sc.real_begin_time AS "schoolClassStudents.schoolClass.realBeginTime"/*开班日期*/
+		FROM school_student a
+		LEFT JOIN school_class_students scs ON scs.student_id = a.id
+		LEFT JOIN school_class sc ON sc.id = scs.class_id/*班级表*/
+		LEFT JOIN school_class_to_lesson sctl ON sctl.class_id = sc.id/*班级课程中间表*/
+		LEFT JOIN school_class_lesson scl ON scl.id = sctl.lesson_id/*课程*/
+		LEFT JOIN sys_user ee ON ee.id = sc.headteacher_id/*员工（班主任）*/
+		LEFT JOIN erp_order eo ON eo.student_id = a.id /*订单（付款类型）*/
+		WHERE 1=1 AND a.id = #{id} AND sc.make_lesson IS NULL
+		GROUP BY sc.class_name
+	</select>
+
+	<!--点击转班查询该学员的班级信息-->
+	<select id="findStudentClass" resultType="Student">
+		SELECT DISTINCT
+		a.id AS "id",
+		a.class_time_id AS "classTimeId",
+		a.name AS "name",/*姓名*/
+		sc.id AS "schoolClassStudents.schoolClass.id",
+		sc.class_name AS "schoolClassStudents.schoolClass.className",/*班级名称*/
+		GROUP_CONCAT(DISTINCT scl.lesson_name) AS "schoolClassStudents.schoolClass.schoolClassToLesson.schoolClassLesson.lessonName",/*课程名称*/
+		ee.name AS "schoolClassStudents.schoolClass.headteacher.name",/*班主任*/
+		sc.tuition_amount AS "schoolClassStudents.schoolClass.tuitionAmount",/*学费*/
+		scs.apply_time AS "schoodlClassStudents.applyTime",
+		sc.real_begin_time AS "schoolClassStudents.schoolClass.realBeginTime",
+		scs.status AS "schoolClassStudents.status",
+		sc.status AS "schoolClassStudents.schoolClass.status"/*班级状态*/
+		FROM school_student a
+		LEFT JOIN school_class_students scs ON scs.student_id = a.id
+		LEFT JOIN school_class sc ON sc.id = scs.class_id/*班级表*/
+		LEFT JOIN school_class_to_lesson sctl ON sctl.class_id = sc.id/*班级课程中间表*/
+		LEFT JOIN school_class_lesson scl ON scl.id = sctl.lesson_id/*课程*/
+		LEFT JOIN sys_user ee ON ee.id = sc.headteacher_id/*员工（班主任）*/
+		WHERE 1 = 1 AND sc.make_lesson IS NULL
+		<if test="id != null">
+			AND a.id = #{id}
+		</if>
+		<if test="employee != null and employee.id != null">
+			AND a.employe_id = #{employee.id}
+		</if>
+		GROUP BY a.id,sc.id
+	</select>
+
+	<select id="findLeaveStudent" resultType="Student">
+		SELECT
+		a.id AS "id",
+		a.student_number AS "studentNumber",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.phone AS "phone",
+		a.status AS "status"
+		FROM school_student a
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			a.student_status = #{studentStatus}
+			<if test="name != null and name != '' ">
+				AND ( a.name LIKE CONCAT('%', #{name}, '%')
+				OR a.student_number LIKE CONCAT('%', #{name}, '%')
+				OR a.phone LIKE CONCAT('%',#{name},'%')
+				)
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+		ORDER BY a.create_time DESC
+	</select>
+
+	<!--添加、修改生源时验证手机号是否存在-->
+	<select id="findPhone" resultType="Student">
+		SELECT
+		<include refid="StudentAllEnrollColumns"/>
+		FROM school_student a
+		<include refid="studentJoins"/>
+		WHERE a.phone = #{phone} AND a.status != 1
+	</select>
+
+	<!--添加、修改生源时验证身份证号码是否存在-->
+	<select id="findStuNumber" resultType="Student">
+		SELECT
+		<include refid="StudentAllEnrollColumns"/>
+		FROM school_student a
+		<include refid="studentJoins"/>
+		WHERE a.stu_number = #{stuNumber} AND a.status != 1
+	</select>
+
+
+	<select id="findListById" resultType="Student">
+		SELECT
+		a.id AS "id",
+		a.name AS "name",
+		a.student_number AS "studentNumber",
+		sc.id AS "schoolClass.id",
+		sc.class_name AS "schoolClass.className"
+		FROM school_student a
+		LEFT JOIN school_class_students scs ON a.id = scs.student_id
+		LEFT JOIN school_class sc ON sc.id = scs.class_id
+		<where>
+			1=1 AND a.id = #{id}
+		</where>
+		GROUP BY a.id
+		ORDER BY a.create_time DESC
+	</select>
+
+
+
+</mapper>

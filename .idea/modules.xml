@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/facade/facade.iml" filepath="$PROJECT_DIR$/facade/facade.iml" />
+      <module fileurl="file://$PROJECT_DIR$/oneportal-service/oneportal-service.iml" filepath="$PROJECT_DIR$/oneportal-service/oneportal-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/order-service/order-service.iml" filepath="$PROJECT_DIR$/order-service/order-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/parent.iml" filepath="$PROJECT_DIR$/parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/service/service.iml" filepath="$PROJECT_DIR$/service/service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sys/sys.iml" filepath="$PROJECT_DIR$/sys/sys.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sys-service/sys-service.iml" filepath="$PROJECT_DIR$/sys-service/sys-service.iml" />
+    </modules>
+  </component>
+</project>

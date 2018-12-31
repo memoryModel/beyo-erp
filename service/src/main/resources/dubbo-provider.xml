@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+	
+
+    <!-- 应用名 -->
+	<dubbo:application name="dubbodemo-provider"/>
+    <!-- 连接到哪个本地注册中心 -->
+    <dubbo:registry protocol="zookeeper"
+                    address="192.168.67.101:2181,192.168.67.102:2181,192.168.67.103:2181"
+                    register="false"
+    />
+    <!-- 协议配置，用于配置提供服务的协议信息，协议由提供方指定，消费方被动接受  -->
+    <dubbo:protocol name="dubbo" server="netty" port="20882" serialization="hessian2" />
+    <!-- 监控中心配置，protocol="registry"，表示从注册中心发现监控中心地址
+    <dubbo:monitor protocol="registry"/>
+    -->
+    <!-- 当ProtocolConfig和ServiceConfig某属性没有配置时,采用此缺省值 -->
+    <dubbo:provider timeout="30000" threadpool="fixed" threads="100" accepts="1000" />
+
+    <!-- 声明需要暴露的服务接口 -->
+    <!-- 地区 -->
+    <dubbo:service timeout="80000" interface="cn.com.beyo.erp.modules.school.areas.facade.AreasFacade"
+                   ref="areasService"/>
+    <!-- 学生 -->
+    <dubbo:service timeout="80000" interface="cn.com.beyo.erp.modules.school.student.facade.StudentFacade"
+                   ref="studentService"/>
+    <!-- 班级 -->
+    <dubbo:service  timeout="80000"
+                    interface="cn.com.beyo.erp.modules.school.classes.facade.ClassFacade"
+                    ref="classService"/>
+
+    <!-- 班级学生中间表 -->
+    <dubbo:service  timeout="80000"
+                    interface="cn.com.beyo.erp.modules.school.clessstudents.facade.ClassStudentsFacade"
+                    ref="classStudentsService"/>
+    <!-- 学生入住 -->
+    <dubbo:service  timeout="80000"
+                    interface="cn.com.beyo.erp.modules.school.dormlive.facade.DormStudentLiveFacade"
+                    ref="dormStudentLiveService"/>
+    <!-- 员工入住 -->
+    <dubbo:service  timeout="80000"
+                    interface="cn.com.beyo.erp.modules.school.dormlive.facade.DormEmployeeLiveFacade"
+                    ref="dormEmployeeLiveService"/>
+    <!-- 课表 -->
+    <dubbo:service  timeout="80000"
+                    interface="cn.com.beyo.erp.modules.school.lesson.facade.LessonFacade"
+                    ref="classLessonService"/>
+</beans>

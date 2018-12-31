@@ -1,0 +1,7 @@
+cn\com\beyo\erp\modules\oneportal\service\SignDetailService.class
+test\OneportalServiceLauncher.class
+cn\com\beyo\erp\modules\oneportal\service\DepartmentInfoService.class
+cn\com\beyo\erp\modules\oneportal\dao\UserInfoDao.class
+cn\com\beyo\erp\modules\oneportal\dao\DepartmentInfoDao.class
+cn\com\beyo\erp\modules\oneportal\service\UserInfoService.class
+cn\com\beyo\erp\modules\oneportal\dao\SignDetailDao.class

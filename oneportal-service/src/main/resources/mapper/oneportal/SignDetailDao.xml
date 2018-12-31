@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.beyo.erp.modules.oneportal.dao.SignDetailDao">
+    <sql id="SignDetailColumns">
+        a.id,
+        a.request_id AS "requestId",
+        a.employee_no AS "employeeNo",
+        a.user_id AS "userId",
+        a.xmwb,
+        a.sign_date AS "signDate",
+        a.first_check_time AS "firstCheckTime",
+        a.last_check_time AS "lastCheckTime"
+    </sql>
+
+    <select id="get" resultType="SignDetail">
+        select
+          <include refid="SignDetailColumns"/>
+        from sign_detail a
+        where a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="SignDetail">
+        SELECT
+        <include refid="SignDetailColumns"/>
+        from sign_detail a
+    </select>
+
+
+
+</mapper>

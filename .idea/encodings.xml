@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/facade" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/facade/src/main/java/cn/com/beyo/erp/commons/redis/Redis.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/facade/src/main/java/cn/com/beyo/erp/commons/redis/RedisKey.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/facade/src/main/java/cn/com/beyo/erp/commons/redis/RedisSimpleByteSource.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/facade/src/main/java/cn/com/beyo/erp/commons/redis/SerializeUtil.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/facade/src/main/java/cn/com/beyo/erp/modules/oneportal/entity/DepartmentInfo.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/facade/src/main/java/cn/com/beyo/erp/modules/oneportal/entity/SignDetail.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/facade/src/main/java/cn/com/beyo/erp/modules/oneportal/entity/UserInfo.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/oneportal-service" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/oneportal-service/src/main/resources/config.properties" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/oneportal-service/src/main/resources/dubbo-provider.xml" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/oneportal-service/src/main/resources/mapper/oneportal/DepartmentInfoDao.xml" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/oneportal-service/src/main/resources/mapper/oneportal/SignDetailDao.xml" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/oneportal-service/src/main/resources/mapper/oneportal/UserInfoDao.xml" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/order-service" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/order-service/src/main/resources/config.properties" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/order-service/src/main/resources/dubbo-provider.xml" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/service" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service/src/main/resources/config.properties" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/service/src/main/resources/dubbo-provider.xml" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/sys" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sys-service" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sys-service/src/main/resources/config.properties" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/sys-service/src/main/resources/dubbo-provider.xml" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/sys/src/main/java/cn/com/beyo/erp/modules/school/student" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/sys/src/main/java/cn/com/beyo/erp/modules/school/student/controller/StudentController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sys/src/main/resources/dubbo-consumer.xml" charset="GBK" />
+  </component>
+</project>

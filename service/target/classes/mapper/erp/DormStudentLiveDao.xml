@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.school.dormlive.dao.DormStudentLiveDao">
+    
+	<sql id="erpDormStudentLiveColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.student_enroll_id AS "erpStudentEnroll.id",
+		a.dorm_room_id AS "dormRoom.id",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status AS "status",
+		a.live_time AS "liveTime",
+	    b.name AS "erpStudentEnroll.name",
+		b.student_number AS "erpStudentEnroll.studentNumber",
+		b.phone AS "erpStudentEnroll.phone",
+		r.name AS "area.name",
+		m.dorm_name AS "dormRoom.erpDorm.dormName",
+		su.name AS "erpStudentEnroll.schoolClassStudents.schoolClass.headteacher.name",
+		su.phone AS "erpStudentEnroll.schoolClassStudents.schoolClass.headteacher.phone"
+
+	</sql>
+
+
+	<sql id="erpDormStudentLiveJoins">
+			LEFT JOIN school_student b ON b.id = a.student_enroll_id
+			left join school_class_students cs on cs.student_id = b.id
+			left join school_class d on cs.class_id = d.id
+			LEFT JOIN sys_user su on su.id = d.headteacher_id
+			LEFT JOIN erp_dorm_room f ON f.id = a.dorm_room_id
+			left join erp_dorm m on m.id = f.dorm_id
+			LEFT JOIN sys_area r on r.id = b.native_place
+	</sql>
+    
+	<select id="get" resultType="DormStudentLive">
+		SELECT 
+			<include refid="erpDormStudentLiveColumns"/>
+		FROM erp_dorm_student_live a
+		<include refid="erpDormStudentLiveJoins"/>
+		WHERE a.id = #{id}
+		GROUP BY a.id
+	</select>
+	
+	<select id="findList" resultType="DormStudentLive">
+	SELECT
+	<include refid="erpDormStudentLiveColumns"/>
+	FROM erp_dorm_student_live a
+	<include refid="erpDormStudentLiveJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+	<where>
+		1=1
+		<if test="erpStudentEnroll != null and erpStudentEnroll.studentNumber != null and erpStudentEnroll.studentNumber != ''">
+			AND b.student_number LIKE CONCAT('%', #{erpStudentEnroll.studentNumber}, '%')
+		</if>
+		<if test="erpStudentEnroll != null and erpStudentEnroll.name != null and erpStudentEnroll.name != ''">
+			AND b.name LIKE CONCAT('%', #{erpStudentEnroll.name}, '%')
+		</if>
+		<if test="startTime != null and startTime != '' ">
+			AND date(a.create_time) &gt;= #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND date(a.create_time) &lt;= #{endTime}
+		</if>
+		<if test="status != null">
+			AND a.status = #{status}
+		</if>
+		<!-- 条件过滤需要添加的过滤条件 -->
+		${sqlMap.dsf}
+	</where>
+		GROUP BY a.id
+	<choose>
+		<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+			ORDER BY ${page.orderBy}
+
+		</when>
+		<otherwise>
+		</otherwise>
+	</choose>
+</select>
+
+	<select id="findStudentLeaveList" resultType="DormStudentLive">
+		SELECT
+		<include refid="erpDormStudentLiveColumns"/>
+		FROM erp_dorm_student_live a
+		<include refid="erpDormStudentLiveJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			1=1
+			and a.status = 1
+			<if test="erpStudentEnroll != null and erpStudentEnroll.studentNumber != null and erpStudentEnroll.studentNumber != ''">
+				AND b.student_number LIKE CONCAT('%', #{erpStudentEnroll.studentNumber}, '%')
+			</if>
+			<if test="erpStudentEnroll != null and erpStudentEnroll.name != null and erpStudentEnroll.name != ''">
+				AND b.name LIKE CONCAT('%', #{erpStudentEnroll.name}, '%')
+			</if>
+			<if test="erpStudentEnroll != null and erpStudentEnroll.phone != null and erpStudentEnroll.phone != ''">
+				AND b.phone LIKE CONCAT('%', #{erpStudentEnroll.phone}, '%')
+			</if>
+			<if test="startTime != null and startTime != '' ">
+				AND date(a.create_time) &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND date(a.create_time) &lt;= #{endTime}
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+		GROUP BY a.id
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DormStudentLive">
+		SELECT 
+			<include refid="erpDormStudentLiveColumns"/>
+		FROM erp_dorm_student_live a
+		<include refid="erpDormStudentLiveJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO erp_dorm_student_live(
+			id,
+			platform_id,
+			student_enroll_id,
+			dorm_room_id,
+			create_time,
+			create_user,
+			status,
+			live_time
+		) VALUES (
+			#{id},
+			#{platformId},
+			#{erpStudentEnroll.id},
+			#{dormRoom.id},
+			#{createTime},
+			#{createUser},
+			#{status},
+			#{liveTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE erp_dorm_student_live SET 	
+			platform_id = #{platformId},
+			student_enroll_id = #{erpStudentEnroll.id},
+			dorm_room_id = #{dormRoom.id},
+			create_time = #{createTime},
+			create_user = #{createUser},
+			status = #{status},
+			live_time = #{liveTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE erp_dorm_student_live
+		WHERE id = #{id}
+	</update>
+
+	<select id="getDormStudentLiveByStudentId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		select COUNT(a.id) from erp_dorm_student_live a
+		LEFT JOIN school_student b on a.student_enroll_id = b.id
+		where (a.`status` = 0 OR a.status = 1) and a.student_enroll_id = #{id}
+	</select>
+</mapper>

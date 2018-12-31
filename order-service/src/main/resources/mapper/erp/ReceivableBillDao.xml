@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.erp.receivablebill.dao.ReceivableBillDao">
+
+	<!-- Ashon 应付账单 -->
+	<sql id="erpReceivableBillColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.financial_code AS "financialCode",/*财务编号*/
+		a.receivable_amount AS "receivableAmount",/*应收金额*/
+		a.delivered_amount AS "deliveredAmount",/*已交金额*/
+		a.description AS "description",/*备注*/
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status AS "status",
+		eorder.id AS "order.id",
+		eorder.order_code AS "order.orderCode",/*订单编号*/
+		eorder.order_type AS "order.orderType",/*订单类别*/
+		eorder.create_time AS "order.createTime",/*下单时间*/
+		corder.code AS "order.contract.code",/*合同编号*/
+
+		stu.id AS "order.student.id",
+		stu.name AS "order.student.name",/*生源名称*/
+		/*stu.financial_numbers AS "order.erpStudentEnroll.financialNumbers",财务编号*/
+		stu.teacher_id AS "order.student.teacher.id",
+
+		pay.id AS "erpPaymentBill.id",
+
+		su.name AS "order.student.teacher.name",/*生源业务归属人*/
+		stuso.name AS "order.student.teacher.office.name",/*生源业务归属部门*/
+		eft.subject_name AS "order.student.erpPaymentBillRecord.erpFinaceType.subjectName"/*财务科目*/
+
+	</sql>
+	<sql id="employeeColumns">
+
+	</sql>
+
+	<!--欠款管理-->
+	<sql id="classColumns">
+		,sc.class_name AS "order.student.schoolClassStudents.schoolClass.className",/*班级名称*/
+		sc.headteacher_id AS "order.student.schoolClassStudents.schoolClass.headteacher.id",
+		suser.name AS "order.student.schoolClassStudents.schoolClass.headteacher.name",/*班主任*/
+		sc.status AS "order.student.schoolClassStudents.schoolClass.status",
+		sc.class_real_num AS "order.student.schoolClassStudents.schoolClass.classRealNum",/*实际招收人数*/
+		sc.real_begin_time AS "order.student.schoolClassStudents.schoolClass.realBeginTime",/*实际开班日期*/
+		sc.real_end_time AS "order.student.schoolClassStudents.schoolClass.realEndTime",/*实际结业日期*/
+		group_concat(cl.lesson_name) AS "lesson_name"
+
+	</sql>
+	<!-- Ashon 收款单 -->
+	<sql id="paymentBillColumns">
+		,pay.bills_code AS "erpPaymentBill.billsCode",
+		pay.type_id AS "erpPaymentBill.typeId",
+		pay.total_amount AS "erpPaymentBill.totalAmount",
+		pay.pay_user	AS	"erpPaymentBill.payUser.id",
+		pay.pay_time	AS "erpPaymentBill.payTime",
+		pay.confirm_id AS "erpPaymentBill.confirmEmployee.id",/*确认人*/
+		pay.confirm_time AS "erpPaymentBill.confirmTime",
+		cu.id AS "erpPaymentBill.collectionEmployee.id",
+		cu.name AS "erpPaymentBill.collectionEmployee.name",/*收款人*/
+		cuoff.name AS "erpPaymentBill.collectionEmployee.office.name",
+		confirm.name AS "erpPaymentBill.confirmEmployee.name",
+		ucf.name AS "erpPaymentBill.confirmEmployee.office.name",
+
+		pay.remark AS "erpPaymentBill.remark",
+		pay.create_time AS "erpPaymentBill.createTime",
+		pay.status AS "erpPaymentBill.status",
+		paybr.id AS "erpPaymentBill.erpPaymentBillRecord.id",
+		paybr.amount AS "erpPaymentBill.erpPaymentBillRecord.amount",
+		paybr.pay_type AS "erpPaymentBill.erpPaymentBillRecord.payType",
+		paybr.subject_id AS "erpPaymentBill.erpPaymentBillRecord.erpFinaceType.id",
+		eft.subject_name AS "erpPaymentBill.erpPaymentBillRecord.erpFinaceType.subjectName"
+	</sql>
+
+	<!-- Ashon 应付账单 -->
+	<sql id="erpReceivableBillJoins">
+		LEFT JOIN erp_order eorder ON eorder.id = a.order_id
+		LEFT JOIN erp_order_contract corder ON corder.order_id = eorder.id
+		LEFT JOIN school_student stu ON stu.id = eorder.student_id
+		LEFT JOIN sys_user su ON su.id = stu.teacher_id
+		LEFT JOIN sys_office stuso ON stuso.id = su.office_id
+		LEFT JOIN erp_payment_bill pay ON pay.receivable_bill_id = a.id
+		LEFT JOIN erp_payment_bill_record paybr ON paybr.bill_id = pay.id
+		LEFT JOIN erp_finace_type eft ON eft.id = paybr.subject_id
+	</sql>
+
+	<!-- 收款单 -->
+	<sql id="paymentBillJoins">
+		LEFT JOIN sys_user confirm ON confirm.id = pay.confirm_id
+		LEFT JOIN sys_office ucf ON ucf.id = confirm.office_id
+		LEFT JOIN sys_user cu ON cu.id = pay.create_user
+		LEFT JOIN sys_office cuoff ON cuoff.id = cu.office_id
+	</sql>
+
+	<!--欠款管理-->
+	<sql id="schoolClassJoins">
+		LEFT JOIN school_class_students cs on cs.student_id = stu.id
+		LEFT JOIN school_class sc on cs.class_id = sc.id
+		LEFT JOIN sys_user suser ON suser.id = sc.headteacher_id
+		LEFT JOIN school_class_to_lesson ctol on ctol.class_id = cs.id
+		LEFT JOIN school_class_lesson cl on ctol.lesson_id = cl.id
+	</sql>
+
+	<select id="getById" resultType="ReceivableBill">
+		SELECT
+		<include refid="erpReceivableBillColumns"/>
+		FROM erp_receivable_bill a
+		<include refid="erpReceivableBillJoins"/>
+		WHERE a.id = #{id} AND a.order_id = #{order.id}
+		GROUP BY a.id
+	</select>
+
+	<select id="get" resultType="ReceivableBill">
+		SELECT
+		<include refid="erpReceivableBillColumns"/>
+		FROM erp_receivable_bill a
+		<include refid="erpReceivableBillColumns"/>
+		WHERE a.id = #{id}
+		GROUP BY a.id
+	</select>
+
+	<select id="getByOrderId" resultType="ReceivableBill">
+		SELECT
+		<include refid="erpReceivableBillColumns"/>
+		FROM erp_receivable_bill a
+		<include refid="erpReceivableBillJoins"/>
+		WHERE a.order_id = #{order.id}
+		GROUP BY a.id
+	</select>
+
+	<select id="findList" resultType="ReceivableBill">
+		SELECT
+		<include refid="erpReceivableBillColumns"/>
+		FROM erp_receivable_bill a
+		<include refid="erpReceivableBillJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			1=1
+			<!-- 财务/订单/合同/收款单编号 -->
+			<if test="order != null and order.orderCode != null and order.orderCode != ''">
+				AND (
+				eorder.order_code LIKE CONCAT('%', #{order.orderCode}, '%')
+				OR a.financial_code LIKE CONCAT('%', #{order.orderCode}, '%')
+				OR corder.code LIKE CONCAT('%', #{order.orderCode}, '%')
+				)
+			</if>
+			<!--客户名称/学号-->
+			<if test="order != null and order.student !=null and order.student.name != ''">
+				AND (
+				stu.name LIKE concat('%',#{order.student.name},'%')
+				OR stu.student_number LIKE concat('%',#{order.student.name},'%')
+				)
+			</if>
+			<if test="order != null and order.orderType != null and order.orderType != ''">
+				AND eorder.order_type = #{order.orderType}
+			</if>
+			<if test="order != null and order.createTimeStart != null and order.createTimeStart != '' ">
+				AND date(eorder.create_time) &gt;= #{order.createTimeStart}
+			</if>
+			<if test="order != null and order.createTimeEnd != null and order.createTimeEnd != ''">
+				AND date(eorder.create_time) &lt;= #{order.createTimeEnd}
+			</if>
+			<!--<if test="order != null and order.createTimeStart != null and order.createTimeStart != '' and order.createTimeEnd != null and order.createTimeEnd != ''">
+				AND date(eorder.create_time) BETWEEN #{order.createTimeStart} AND #{order.createTimeEnd}
+			</if>-->
+
+			<!--<if test="order !=null and order.erpStudentEnroll.employee.office.id !=null">
+				AND eorder.id = #{order.erpStudentEnroll.employee.office.id}
+			</if>-->
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+		GROUP BY a.id
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				,a.status ASC
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- Ashon 查询收款单 -->
+	<select id="findPayBillList" resultType="ReceivableBill">
+		SELECT
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.financial_code AS "financialCode",/*财务编号*/
+		a.receivable_amount AS "receivableAmount",/*应收金额*/
+		a.delivered_amount AS "deliveredAmount",/*已交金额*/
+		a.description AS "description",/*备注*/
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status AS "status",
+		eorder.id AS "order.id",
+		eorder.order_code AS "order.orderCode",/*订单编号*/
+		eorder.order_type AS "order.orderType",/*订单类别*/
+		eorder.pay_type AS "order.payType",/*付款类型*/
+		eorder.create_time AS "order.createTime",/*下单时间*/
+		stu.name AS "order.student.name",/*生源名称*/
+		scs.apply_time AS "order.classStudents.applyTime",/*报名日期*/
+		sc.class_name AS "order.classStudents.schoolClass.className",/*班级名称*/
+		sc.real_begin_time AS "order.classStudents.schoolClass.realBeginTime",/*开班日期*/
+		headTeacher.name AS "order.classStudents.schoolClass.headteacher.name"/*班主任*/
+		FROM erp_receivable_bill a
+		LEFT JOIN erp_order eorder ON eorder.id = a.order_id
+		LEFT JOIN school_student stu ON stu.id = eorder.student_id
+		LEFT JOIN school_class_students scs ON scs.order_id = eorder.id
+		LEFT JOIN school_class sc ON sc.id = scs.class_id
+		LEFT JOIN sys_user headTeacher ON headTeacher.id = sc.headteacher_id
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+
+		<where>
+			<!-- 订单编号 -->
+			<if test="order != null and order.orderCode != null and order.orderCode != ''">
+				AND corder.code LIKE CONCAT('%', #{order.orderCode}, '%')
+			</if>
+			<!--客户名称/学号-->
+			<if test="order != null and order.student !=null and order.student.name != ''">
+				AND (
+				stu.name LIKE concat('%',#{order.student.name},'%')
+				OR stu.student_number LIKE concat('%',#{order.student.name},'%')
+				)
+			</if>
+			<if test="order != null and order.orderType != null and order.orderType != ''">
+				AND eorder.order_type = #{order.orderType}
+			</if>
+			<if test="order != null and order.createTimeStart != null and order.createTimeStart != '' ">
+				AND date(eorder.create_time) &gt;= #{order.createTimeStart}
+			</if>
+			<if test="order != null and order.createTimeEnd != null and order.createTimeEnd != ''">
+				AND date(eorder.create_time) &lt;= #{order.createTimeEnd}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+		GROUP BY a.id
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				,a.status ASC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="ReceivableBill">
+		SELECT
+		<include refid="erpReceivableBillColumns"/>
+		FROM erp_receivable_bill a
+		<include refid="erpReceivableBillJoins"/>
+		<where>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findReceivableBillByOrder" resultType="ReceivableBill">
+		SELECT
+		<include refid="erpReceivableBillColumns"/>
+		FROM erp_receivable_bill a
+		<include refid="erpReceivableBillJoins"/>
+		<where>
+			a.order_id = #{order.id}
+		</where>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO erp_receivable_bill(
+		id,
+		platform_id,
+		financial_code,
+		order_id,
+		receivable_amount,
+		delivered_amount,
+		description,
+		create_time,
+		create_user,
+		status
+		) VALUES (
+		#{id},
+		#{platformId},
+		#{financialCode},
+		#{order.id},
+		#{receivableAmount},
+		#{deliveredAmount},
+		#{description},
+		#{createTime},
+		#{createUser},
+		#{status}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE erp_receivable_bill SET
+		platform_id = #{platformId},
+		order_id = #{order.id},
+		receivable_amount = #{receivableAmount},
+		delivered_amount = #{deliveredAmount},
+		description = #{description},
+		create_time = #{createTime},
+		create_user = #{createUser},
+		status = #{status}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateStatusByOrderId">
+		UPDATE erp_receivable_bill SET
+		status = #{status}
+		WHERE order_id = #{order.id}
+	</update>
+
+	<update id="updateStatusByorderIds">
+		UPDATE erp_receivable_bill SET
+		status = #{receivableBill.status}
+		WHERE order_id IN
+		<foreach collection="idList" item="id" separator="," open="(" close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<update id="delete">
+		UPDATE erp_receivable_bill
+		WHERE id = #{id}
+	</update>
+
+	<!--账单挂起功能-->
+	<update id="freeze">
+		UPDATE erp_receivable_bill SET
+		status = 2 ,description = #{description}
+		WHERE  id=#{id}
+	</update>
+
+
+	<!--账单解挂功能-->
+	<update id="unlock">
+		UPDATE erp_receivable_bill SET
+		status = 1 ,description = #{description}
+		WHERE  id=#{id}
+	</update>
+
+	<!--确认收入功能-->
+	<update id="affirm">
+		UPDATE erp_receivable_bill SET
+		status = 3 ,description=#{description}
+		WHERE  id=#{id}
+	</update>
+
+
+	<!--欠款管理-->
+	<select id="findPageByPayStatus" resultType="ReceivableBill">
+		SELECT
+		<include refid="erpReceivableBillColumns"/>
+		FROM erp_receivable_bill a
+		<include refid="erpReceivableBillJoins"/>
+		<where>
+			1=1 and a.status = 2
+			<if test="order != null and order.id != null">
+				AND eorder.id = #{order.id}
+			</if>
+			<if test="order != null and order.orderCode != null and order.orderCode != ''">
+				AND eorder.order_code LIKE CONCAT('%', #{order.orderCode}, '%')
+			</if>
+			<if test="order != null and order.orderType != null and order.orderType != ''">
+				AND eorder.order_type = #{order.orderType}
+			</if>
+			<if test="order != null and order.createTimeStart != null and order.createTimeStart != '' and order.createTimeEnd != null and order.createTimeEnd != ''">
+				AND date(eorder.create_time) BETWEEN #{order.createTimeStart} AND #{order.createTimeEnd}
+			</if>
+			<if test="billStatus != null and billStatus != ''">
+				AND rl.status = #{billStatus}
+			</if>
+		</where>
+		GROUP BY a.id
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	<!--欠款管理-->
+	<select id="getErpReceiveBillById" resultType="ReceivableBill">
+		SELECT
+
+		<include refid="erpReceivableBillColumns"/>
+		<include refid="classColumns"/>
+		FROM erp_receivable_bill a
+		<include refid="erpReceivableBillJoins"/>
+		<include refid="schoolClassJoins"/>
+		WHERE a.id = #{id}
+	</select>
+</mapper>

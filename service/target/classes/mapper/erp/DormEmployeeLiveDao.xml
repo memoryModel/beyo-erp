@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.school.dormlive.dao.DormEmployeeLiveDao">
+    
+	<sql id="erpDormEmployeeLiveColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.employee_id AS "erpEmployee.id",
+		a.dorm_room_id AS "dormRoom.erpDorm.id",
+		a.handle_name_id AS "user.id",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status AS "status",
+		a.live_time AS "liveTime",
+		b.name AS "erpEmployee.name",
+		su.name AS "handleName.name",
+		b.code AS "erpEmployee.code",
+		b.phone AS "erpEmployee.phone",
+		b.idcard AS "erpEmployee.idcard",
+		b.profession AS "erpEmployee.profession",
+		sa.id AS "erpEmployee.originalArea.id",
+		sa.name AS "erpEmployee.originalArea.name",
+		d.dorm_name AS "erpDorm.dormName"
+
+	</sql>
+
+	<sql id="erpDormEmployeeLiveJoins">
+		left join erp_employee b on b.id = a.employee_id
+		left join sys_user su on su.id = a.handle_name_id
+		LEFT JOIN sys_area sa ON  sa.id = b.original_area_id
+	  	left join erp_dorm_room rm on rm.id = a.dorm_room_id
+		left join erp_dorm d on d.id = rm.dorm_id
+	</sql>
+    
+	<select id="get" resultType="DormEmployeeLive">
+		SELECT 
+			<include refid="erpDormEmployeeLiveColumns"/>
+		FROM erp_dorm_employee_live a
+		<include refid="erpDormEmployeeLiveJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DormEmployeeLive">
+		SELECT 
+			<include refid="erpDormEmployeeLiveColumns"/>
+		FROM erp_dorm_employee_live a
+		<include refid="erpDormEmployeeLiveJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			1=1
+			<if test="erpEmployee != null and erpEmployee.code != null and erpEmployee.code != ''">
+				AND b.code LIKE CONCAT('%', #{erpEmployee.code}, '%')
+			</if>
+			<if test="erpEmployee != null and erpEmployee.name != null and erpEmployee.name != ''">
+				AND b.name LIKE CONCAT('%', #{erpEmployee.name}, '%')
+			</if>
+			<if test="startTime != null and startTime != '' ">
+				AND date(a.create_time) &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND date(a.create_time) &lt;= #{endTime}
+			</if>
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findEmployeeLeaveList" resultType="DormEmployeeLive">
+		SELECT
+		<include refid="erpDormEmployeeLiveColumns"/>
+		FROM erp_dorm_employee_live a
+		<include refid="erpDormEmployeeLiveJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			1=1
+			AND  a.status = 1
+			<if test="erpEmployee != null and erpEmployee.code != null and erpEmployee.code != ''">
+				AND b.code LIKE CONCAT('%', #{erpEmployee.code}, '%')
+			</if>
+			<if test="erpEmployee != null and erpEmployee.name != null and erpEmployee.name != ''">
+				AND b.name LIKE CONCAT('%', #{erpEmployee.name}, '%')
+			</if>
+			<if test="erpEmployee != null and erpEmployee.phone != null and erpEmployee.phone != ''">
+				AND b.phone LIKE CONCAT('%', #{erpEmployee.phone}, '%')
+			</if>
+			<if test="startTime != null and startTime != '' ">
+				AND date(a.create_time) &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND date(a.create_time) &lt;= #{endTime}
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DormEmployeeLive">
+		SELECT 
+			<include refid="erpDormEmployeeLiveColumns"/>
+		FROM erp_dorm_employee_live a
+		<include refid="erpDormEmployeeLiveJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO erp_dorm_employee_live(
+			id,
+			platform_id,
+			employee_id,
+			dorm_room_id,
+			handle_name_id,
+			create_time,
+			create_user,
+			status,
+			live_time
+		) VALUES (
+			#{id},
+			#{platformId},
+			#{erpEmployee.id},
+			#{dormRoom.erpDorm.id},
+			#{handleName.id},
+			#{createTime},
+			#{createUser},
+			#{status},
+			#{liveTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE erp_dorm_employee_live SET 	
+			platform_id = #{platformId},
+			employee_id = #{erpEmployee.id},
+			dorm_room_id = #{dormRoom.erpDorm.id},
+		    handle_name_id = #{handleName.id},
+		    create_time = #{createTime},
+			create_user = #{createUser},
+			status = #{status},
+			live_time = #{liveTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE erp_dorm_employee_live
+		WHERE id = #{id}
+	</update>
+
+	<select id="getDormEmployeeLiveByEmployeeId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		select COUNT(a.id) from erp_dorm_employee_live a
+		LEFT JOIN erp_employee b on a.employee_id = b.id
+		where (a.`status` = 0 OR a.status = 1) and a.employee_id = #{id}
+	</select>
+
+</mapper>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+    <!-- 应用名 -->
+    <dubbo:application name="dubbodemo-consumer"/>
+
+    <!-- 连接到哪个注册中心（连接到本机的2181端口zookeeper） -->
+    <dubbo:registry protocol="zookeeper"
+                    address="192.168.67.101:2181,192.168.67.102:2181,192.168.67.103:2181"/>
+
+
+    <dubbo:consumer timeout="60000" />
+
+
+    <!-- 提供哪些接口给消费者调用 -->
+    <!-- 地区 -->
+    <dubbo:reference id="areasFacade"
+                     interface="cn.com.beyo.erp.modules.school.areas.facade.AreasFacade"
+                     check="false"
+                     url="dubbo://localhost:20882"/>
+    <!-- 学生 -->
+    <dubbo:reference id="studentFacade"
+                     interface="cn.com.beyo.erp.modules.school.student.facade.StudentFacade"
+                     check="false"
+                    url="dubbo://localhost:20882"/>
+    <!-- 班级 -->
+    <dubbo:reference id="classFacade"
+                     interface="cn.com.beyo.erp.modules.school.classes.facade.ClassFacade"
+                    check="false"
+                     url="dubbo://localhost:20882"/>
+    <!-- 班级学生中间表 -->
+    <dubbo:reference id="classStudentsFacade"
+                     interface="cn.com.beyo.erp.modules.school.clessstudents.facade.ClassStudentsFacade"
+                     check="false"
+                     url="dubbo://localhost:20882"/>
+    <!-- 学生入住 -->
+    <dubbo:reference    id="dormStudentLiveFacade"
+                        interface="cn.com.beyo.erp.modules.school.dormlive.facade.DormStudentLiveFacade"
+                        check="false"
+                        url="dubbo://localhost:20882"/>
+    <!-- 员工入住 -->
+    <dubbo:reference    id="dormEmployeeLiveFacade"
+                        interface="cn.com.beyo.erp.modules.school.dormlive.facade.DormEmployeeLiveFacade"
+                        check="false"
+                        url="dubbo://localhost:20882"/>
+    <!-- 课表 -->
+    <dubbo:reference    id="lessonFacade"
+                        interface="cn.com.beyo.erp.modules.school.lesson.facade.LessonFacade"
+                        check="false"
+                        url="dubbo://localhost:20882"/>
+
+    <!-- 订单 -->
+    <dubbo:reference    id="orderFacade"
+                        interface="cn.com.beyo.erp.modules.erp.order.facade.OrderFacade"
+                        check="false"
+                        url="dubbo://localhost:20883"/>
+    <!-- 应收 -->
+    <dubbo:reference    id="receivableBillFacade"
+                        interface="cn.com.beyo.erp.modules.erp.receivablebill.facade.ReceivableBillFacade"
+                        check="false"
+                        url="dubbo://localhost:20883"/>
+    <!-- 系统地区 -->
+    <dubbo:reference    id="areaFacade"
+                        interface="cn.com.beyo.erp.modules.sys.facade.AreaFacade"
+                        check="false"
+                        url="dubbo://localhost:20884"/>
+    <!-- 菜单 -->
+    <dubbo:reference    id="menuFacade" interface="cn.com.beyo.erp.modules.sys.facade.MenuFacade"
+                        check="false"
+                        url="dubbo://localhost:20884"/>
+    <!-- system -->
+    <dubbo:reference    id="systemFacade"
+                        interface="cn.com.beyo.erp.modules.sys.facade.SystemFacade"
+                        check="false"
+                        url="dubbo://localhost:20884"/>
+    <!-- 部门 -->
+    <dubbo:reference    id="departmentInfoFacade"
+                        interface="cn.com.beyo.erp.modules.oneportal.facade.DepartmentInfoFacade"
+                        url="dubbo://localhost:20885"/>
+    <!-- 签到 -->
+    <dubbo:reference    id="signDetailFacade"
+                        interface="cn.com.beyo.erp.modules.oneportal.facade.SignDetailFacade"
+                        url="dubbo://localhost:20885"/>
+    <!-- 员工 -->
+    <dubbo:reference    id="userInfoFacade"
+                        interface="cn.com.beyo.erp.modules.oneportal.facade.UserInfoFacade"
+                        url="dubbo://localhost:20885"/>
+</beans>

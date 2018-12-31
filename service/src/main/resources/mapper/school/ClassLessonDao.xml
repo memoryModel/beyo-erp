@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.school.lesson.dao.ClassLessonDao">
+
+	<sql id="schoolClassLessonColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.lesson_name AS "lessonName",
+		a.lesson_type AS "schoolLessonType",
+		a.subject_id AS "commonsType.id",
+		/*a.teacher_id AS "teacher.id",*/
+		a.teacher_ids AS "teacherIds",
+		a.photo_url AS "photoUrl",
+		a.lesson_content AS "lessonContent",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status AS "status"
+		/*su.name AS "teacher.name",*/
+	</sql>
+	<!--c.id AS "schoolClass.id",
+	c.class_name AS "schoolClass.className",
+	sch.begin_time AS "schoolClassSchedule.beginTime",
+	sch.end_time AS "schoolClassSchedule.endTime"-->
+
+	<sql id="schoolClassLessonJoins">
+		/*LEFT JOIN sys_user su ON su.id = a.teacher_id*/
+	</sql>
+	<!--LEFT JOIN (
+	school_class c
+	LEFT JOIN school_class_schedule sch ON sch.lesson_id = c.lesson_id
+	AND sch.class_id = c.id
+	) ON c.lesson_id = a.id-->
+
+	<select id="findById" resultType="ClassLesson">
+		SELECT
+		<include refid="schoolClassLessonColumns"/>
+		FROM school_class_lesson a
+		<include refid="schoolClassLessonJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="get" resultType="ClassLesson">
+		SELECT
+		<include refid="schoolClassLessonColumns"/>
+		FROM school_class_lesson a
+		<include refid="schoolClassLessonJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="ClassLesson">
+		SELECT
+		<include refid="schoolClassLessonColumns"/>
+		/*(SELECT GROUP_CONCAT(suser.name) FROM sys_user suser WHERE suser.id IN(a.teacher_ids)) AS "teacherNames"*/
+		FROM school_class_lesson a
+		<include refid="schoolClassLessonJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			1 = 1
+			<if test="lessonName != null and lessonName != ''">
+				AND a.lesson_name LIKE CONCAT('%', #{lessonName}, '%')
+			</if>
+			<!--<if test="teacher != null and teacher.name != null and teacher.name != ''">
+				AND su.name LIKE CONCAT('%', #{teacher.name}, '%')
+			</if>-->
+			<!--<if test="schoolClass != null and schoolClass.id != null">
+				AND c.id = #{schoolClass.id}
+			</if>
+			<if test="schoolClass != null and schoolClass.className != null and schoolClass.className != ''">
+				AND c.class_name LIKE CONCAT('%', #{schoolClass.className}, '%')
+			</if>-->
+
+			<if test="schoolLessonType != null">
+				AND a.lesson_type = #{schoolLessonType}
+			</if>
+			<if test="schoolSubject != null and schoolSubject.subjectName != null and schoolSubject.subjectName != ''">
+				AND sub.subject_name LIKE CONCAT('%', #{schoolSubject.subjectName}, '%')
+			</if>
+			<if test="schoolSubject != null and schoolSubject.id != null">
+				AND sub.id = #{schoolSubject.id}
+			</if>
+			<if test="createTimeStart != null and createTimeStart != '' ">
+				AND date(a.create_time) &gt;= #{createTimeStart}
+			</if>
+			<if test="createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.create_time) &lt;= #{createTimeEnd}
+			</if>
+			<!--<if test="createTimeStart != null and createTimeStart != '' and createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.create_time) BETWEEN #{createTimeStart} AND #{createTimeEnd}
+			</if>-->
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+		GROUP BY a.id
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				,a.status ASC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="ClassLesson">
+		SELECT
+		<include refid="schoolClassLessonColumns"/>
+		FROM school_class_lesson a
+		<include refid="schoolClassLessonJoins"/>
+		<where>
+			a.status = 0
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 查询班级课程 @author Ashon @version 2017-07-29 -->
+	<select id="findClassLessonList" resultType="ClassLesson">
+		SELECT
+		<include refid="schoolClassLessonColumns"/>
+		,sctl.class_id AS "schoolClassToLesson.schoolClass.id"
+		FROM school_class_lesson a
+		<include refid="schoolClassLessonJoins"/>
+		RIGHT JOIN school_class_to_lesson sctl ON a.id = sctl.lesson_id
+		<where>
+			1 = 1
+			<if test="lessonName != null and lessonName != ''">
+				AND a.lesson_name LIKE CONCAT('%', #{lessonName}, '%')
+			</if>
+			<!--<if test="teacher != null and teacher.name != null and teacher.name != ''">
+				AND su.name LIKE CONCAT('%', #{teacher.name}, '%')
+			</if>-->
+			<if test="schoolClassToLesson != null and schoolClassToLesson.schoolClass != null and schoolClassToLesson.schoolClass.id != null">
+				AND sctl.class_id = #{schoolClassToLesson.schoolClass.id}
+			</if>
+			<!--<if test="schoolClass != null and schoolClass.className != null and schoolClass.className != ''">
+				AND c.class_name LIKE CONCAT('%', #{schoolClass.className}, '%')
+			</if>-->
+
+			<if test="schoolLessonType != null">
+				AND a.lesson_type = #{schoolLessonType}
+			</if>
+			<!--<if test="schoolSubject != null and schoolSubject.subjectName != null and schoolSubject.subjectName != ''">
+				AND sub.subject_name LIKE CONCAT('%', #{schoolSubject.subjectName}, '%')
+			</if>
+			<if test="schoolSubject != null and schoolSubject.id != null">
+				AND sub.id = #{schoolSubject.id}
+			</if>-->
+			<if test="createTimeStart != null and createTimeStart != '' ">
+				AND date(a.create_time) &gt;= #{createTimeStart}
+			</if>
+			<if test="createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.create_time) &lt;= #{createTimeEnd}
+			</if>
+			<!--<if test="createTimeStart != null and createTimeStart != '' and createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.create_time) BETWEEN #{createTimeStart} AND #{createTimeEnd}
+			</if>-->
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				,a.status ASC
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 查询课程列表 @author Ashon @version 2017-06-08 -->
+	<select id="findLessonList" resultType="ClassLesson">
+		SELECT
+		a.lesson_name AS 'lessonName',
+		a.lesson_content AS 'lessonContent',
+		a.id AS 'id',
+		/*a.teacher_id AS 'teacher.id',*/
+		su.name AS 'teacher.name'
+		FROM school_class_lesson a
+		LEFT JOIN sys_user su ON su.id = a.teacher_id
+		WHERE 1=1
+		AND a.lesson_content != ''
+		ORDER BY a.lesson_name
+	</select>
+
+	<!-- 只单独查询下拉课程  -->
+	<select id="findLessonLists" resultType="ClassLesson">
+		SELECT
+		a.id AS 'id',
+		a.lesson_name AS 'lessonName',
+		a.lesson_content AS 'lessonContent',
+		a.status AS 'status'
+		FROM school_class_lesson a
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		WHERE 1=1
+		AND a.status = #{status}
+		<!-- 条件过滤需要添加的过滤条件 -->
+		${sqlMap.dsf}
+	</select>
+
+	<insert id="insert">
+		INSERT INTO school_class_lesson(
+		id,
+		platform_id,
+		lesson_name,
+		lesson_type,
+		subject_id,
+		teacher_ids,
+		photo_url,
+		lesson_content,
+		create_time,
+		create_user,
+		status
+		) VALUES (
+		#{id},
+		#{platformId},
+		#{lessonName},
+		#{schoolLessonType},
+		#{schoolSubject.id},
+		#{teacherIds},
+		#{photoUrl},
+		#{lessonContent},
+		#{createTime},
+		#{createUser},
+		#{status}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE school_class_lesson SET
+			platform_id = #{platformId},
+			lesson_name = #{lessonName},
+			lesson_type = #{schoolLessonType},
+			subject_id = #{schoolSubject.id},
+			teacher_ids = #{teacherIds},
+			photo_url = #{photoUrl},
+			lesson_content = #{lessonContent},
+			create_time = #{createTime},
+			create_user = #{createUser},
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE school_class_lesson SET
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

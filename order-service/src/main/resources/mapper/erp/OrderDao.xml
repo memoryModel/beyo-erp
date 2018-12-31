@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.erp.order.dao.OrderDao">
+
+	<sql id="erpOrderColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.extend_id AS "extendOrder.id",
+		a.order_code AS "orderCode",
+		a.pay_time AS "payTime",
+		a.finish_time AS "finishTime",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.pay_type AS "payType",
+		a.order_type AS "orderType",
+		a.sign	AS "sign",
+		a.sign_status	AS "signStatus",
+		a.status AS "status",
+		a.num AS "num",
+		a.refund_status AS "refundStatus",
+		a.pay_status AS "payStatus",
+		a.favorable_amount AS "favorableAmount",
+		a.overall_amount AS "overallAmount",
+		a.payment_amount AS "paymentAmount"
+	</sql>
+
+	<!--全部订单-->
+	<sql id="allOrderColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.extend_id AS "extendOrder.id",
+		a.order_code AS "orderCode",
+		a.pay_time AS "payTime",
+		a.finish_time AS "finishTime",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.pay_type AS "payType",
+		a.order_type AS "orderType",
+		a.sign	AS "sign",
+		a.sign_status	AS "signStatus",
+		a.status AS "status",
+		a.num AS "num",
+		a.refund_status AS "refundStatus",
+		a.pay_status AS "payStatus",
+		a.favorable_amount AS "favorableAmount",
+		a.overall_amount AS "overallAmount",
+		a.payment_amount AS "paymentAmount",
+		ss.id AS "student.id",
+		ss.name AS "student.name",
+		ss.phone AS "student.phone",
+		ss.sex AS "student.sex",
+		ss.date_birth AS "student.dateBirth",
+		ss.student_number AS "student.studentNumber",
+		ss.qq_number AS "student.qqNumber",
+		ss.student_type AS "student.studentType",
+		ss.emergency_contact AS "student.emergencyContact",
+		ss.urgency_phone AS "student.urgencyPhone",
+		ss.native_place AS "student.nativePlace.id",
+		r.name AS "student.nativePlace.name",
+		ct.id AS "customer.id",
+		ct.name AS "customer.name",
+		ct.phone AS "customer.phone",
+		ct.code AS "customer.code",
+		ct.sex AS "customer.sex",
+		ct.type AS "customer.type",
+		ct.email AS "customer.email",
+		ct.address AS "customer.address",
+		ct.birth_time AS "customer.birthTime",
+		ecr.id AS "customer.customerResource.id",
+		ecr.customer_name AS "customer.customerResource.customerName",
+		u.id AS "sale.id",
+		u.name AS "sale.name",
+		cr.id AS "customerResource.id",
+		cr.customer_name AS "customerResource.customerName",
+		eoc.id AS "contract.id",
+		eoc.id AS "contract.title",
+		eoc.code AS "contract.code",
+		eoc.sign_time AS "contract.signTime",
+		eoc.remark AS "contract.remark",
+		rb.delivered_amount	AS "receivableBill.deliveredAmount",
+		ev.amount AS "invoice.amount",
+		ev.status AS "invoice.status"
+
+	</sql>
+	<!--合同-->
+	<sql id="orderContractColumns">
+		,ocontract.code AS "contract.code"
+	</sql>
+
+
+	<sql id="studentColumns">
+		ss.id AS "student.id",
+		ss.name AS "student.name",
+		ss.student_number AS "student.studentNumber",
+		sc.id AS "schoolClass.id",
+		sc.class_name AS "schoolClass.className",
+		sc.tuition_amount AS "schoolClass.tuitionAmount",
+		sc.plan_begin_time AS "schoolClass.planBeginTime",
+		sc.real_begin_time AS "schoolClass.realBeginTime",
+		scs.apply_time AS "classStudents.applyTime",
+		rb.id AS "receivableBill.id",
+		rb.delivered_amount	AS "receivableBill.deliveredAmount",
+		rb.status AS "receivableBill.status",
+		te.name AS "teacher.name"
+	</sql>
+
+	<sql id="customerColumns">
+		ct.id AS "customer.id",
+		ct.name AS "customer.name",
+		ct.phone AS "customer.phone",
+		ct.sex AS "customer.sex",
+		ct.birth_time AS "customer.birthTime",
+		u.id AS "sale.id",
+		u.name AS "sale.name",
+		cr.id AS "customerResource.id",
+		cr.customer_name AS "customerResource.customerName",
+		oc.id AS "contract.id",
+		oc.code AS "contract.code",
+		oc.create_time AS "contract.createTime",
+		rb.id AS "receivableBill.id",
+		rb.delivered_amount	AS "receivableBill.deliveredAmount",
+		rb.status AS "receivableBill.status"
+	</sql>
+
+<!--全部订单-->
+	<sql id="allOrderJoins">
+		LEFT JOIN school_student ss ON a.student_id = ss.id
+		LEFT JOIN crm_customer ct on a.customer_id = ct.id
+		LEFT JOIN sys_user u on a.sale_id = u.id
+		LEFT JOIN erp_customer_resource cr on a.resource_id = cr.id
+		LEFT JOIN erp_order_contract oc on a.id = oc.order_id
+		LEFT JOIN erp_order_contract eoc on a.id = eoc.order_id
+		LEFT JOIN erp_customer_resource ecr on ct.resource_id = ecr.id
+		LEFT JOIN sys_area r on r.id = ss.native_place
+		LEFT JOIN erp_receivable_bill rb on a.id = rb.order_id
+		LEFT JOIN erp_invoice ev ON ev.order_id  = a.id
+
+
+	</sql>
+
+	<sql id="studentJoins">
+		LEFT JOIN school_class_students scs ON scs.order_id = a.id
+		LEFT JOIN school_student ss ON ss.id = scs.student_id
+		LEFT JOIN school_class	sc ON sc.id = scs.class_id
+		LEFT JOIN erp_receivable_bill rb on a.id = rb.order_id
+		LEFT JOIN sys_user te on sc.headteacher_id = te.id
+	</sql>
+	<sql id="customerJoins">
+		LEFT JOIN crm_customer ct on a.customer_id = ct.id
+		LEFT JOIN sys_user u on a.sale_id = u.id
+		LEFT JOIN erp_customer_resource cr on a.resource_id = cr.id
+		LEFT JOIN erp_order_contract oc on a.id = oc.order_id
+		LEFT JOIN erp_receivable_bill rb on a.id = rb.order_id
+	</sql>
+
+
+
+	<select id="get" resultType="Order">
+		SELECT
+		<include refid="erpOrderColumns"/>
+		FROM erp_order a
+		WHERE a.id = #{id} GROUP  BY a.id
+	</select>
+
+	<select id="findOrderById" resultType="Order">
+		SELECT
+		<include refid="erpOrderColumns"/>
+		<if test="orderType != null and orderType==1">
+			,<include refid="studentColumns"/>
+		</if>
+		<if test="orderType != null and orderType==2">
+			,<include refid="customerColumns"/>
+		</if>
+		FROM erp_order a
+		<if test="orderType != null and orderType==1">
+			<include refid="studentJoins"/>
+		</if>
+		<if test="orderType != null and orderType==2">
+			<include refid="customerJoins"/>
+		</if>
+		WHERE a.id = #{id} GROUP  BY a.id
+	</select>
+
+	<select id="findList" resultType="Order">
+		SELECT
+		<include refid="erpOrderColumns"/>
+		<if test="orderType != null and orderType==1">
+			,<include refid="studentColumns"/>
+		</if>
+		<if test="orderType != null and orderType==2">
+			,<include refid="customerColumns"/>
+		</if>
+		FROM erp_order a
+		<if test="orderType != null and orderType==1">
+			<include refid="studentJoins"/>
+		</if>
+		<if test="orderType != null and orderType==2">
+			<include refid="customerJoins"/>
+		</if>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			1=1
+
+			<if test="createTimeStart != null and createTimeStart != '' ">
+				AND date(a.create_time) &gt;= #{createTimeStart}
+			</if>
+			<if test="createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.create_time) &lt;= #{createTimeEnd}
+			</if>
+			<if test="finishTimeStart != null and finishTimeStart != '' ">
+				AND date(a.finish_time) &gt;= #{finishTimeStart}
+			</if>
+			<if test="finishTimeEnd != null and finishTimeEnd != ''">
+				AND date(a.finish_time) &lt;= #{finishTimeEnd}
+			</if>
+			<if test="payTimeStart != null and payTimeStart != '' ">
+				AND date(a.pay_time) &gt;= #{payTimeStart}
+			</if>
+			<if test="payTimeEnd != null and payTimeEnd != ''">
+				AND date(a.pay_time) &lt;= #{payTimeEnd}
+			</if>
+			<if test="status != null and status!=-1 and status != 5">
+				AND a.status = #{status}
+			</if>
+			<if test="status != null and status == 5">
+				AND (a.status = 5 or a.status = 3 or a.status = 7 or a.status = 8 or a.status = 9)
+			</if>
+			<if test="orderCode != null and orderCode!=''">
+				AND a.order_code = #{orderCode}
+			</if>
+			<if test="payStatus != null">
+				AND a.pay_status = #{payStatus}
+			</if>
+			<if test="payType != null">
+				AND a.pay_type = #{payType}
+			</if>
+			<if test="sign != null">
+				AND a.sign = #{sign}
+			</if>
+			<if test="signStatus != null">
+				AND a.sign_status = #{signStatus}
+			</if>
+			<if test="refundStatus != null">
+				AND a.refund_status = #{refundStatus}
+			</if>
+			<if test="orderType != null">
+				AND a.order_type = #{orderType}
+			</if>
+			<if test="customerResource != null and customerResource.id!= null">
+				AND a.resource_id = #{customerResource.id}
+			</if>
+
+			<if test="extendOrder != null and extendOrder.id==1">
+				AND a.extend_id IS NULL
+			</if>
+			<if test="extendOrder != null and extendOrder.id==2">
+				AND a.extend_id IS NOT NULL
+			</if>
+
+			<if test="orderType != null and orderType==1">
+				<if test="student != null and student.name!= null and student.name!= ''">
+					AND ss.name like CONCAT ('%',#{student.name},'%')
+				</if>
+				<if test="student != null and student.studentNumber!= null and student.studentNumber!= ''">
+					AND ss.student_number like CONCAT ('%',#{student.studentNumber},'%')
+				</if>
+				<if test="student != null and student.phone!= null and student.phone!= ''">
+					AND ss.phone like CONCAT ('%',#{student.phone},'%')
+				</if>
+				<if test="schoolClass != null and schoolClass.className!= null and schoolClass.className!= ''">
+					AND sc.class_name like CONCAT ('%',#{schoolClass.className},'%')
+				</if>
+				<if test="feeStatus != null and orderType != null and orderType==1">
+					AND rb.status = #{feeStatus}
+				</if>
+			</if>
+
+			<if test="orderType != null and orderType==2">
+				<if test="customer != null and customer.id!= null">
+					AND ct.id = ${customer.id}
+				</if>
+				<if test="customer != null and customer.name!= null and customer.name!= ''">
+					AND ct.name like CONCAT ('%',#{customer.name},'%')
+				</if>
+				<if test="customer != null and customer.phone!= null and customer.phone!= ''">
+					AND ct.phone like CONCAT ('%',#{customer.phone},'%')
+				</if>
+				<if test="contract != null and contract.code != null and contract.code != ''">
+					AND oc.code  like CONCAT ('%',#{contract.code},'%')
+				</if>
+			</if>
+
+			<if test="orderType != null and orderType==1 and classStudents != null and classStudents.status != null">
+					AND scs.status = #{classStudents.status}
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findOrderByDispatch" resultType="Order">
+		SELECT
+		<include refid="erpOrderColumns"/>
+		,<include refid="customerColumns"/>
+		FROM erp_order a
+		<include refid="customerJoins"/>
+		<where>
+			1=1 AND a.status IN (2,3)
+
+			<if test="customer != null and customer.name!= null and customer.name!= ''">
+				AND ct.name like CONCAT ('%',#{customer.name},'%')
+			</if>
+			<if test="customer != null and customer.phone!= null and customer.phone!= ''">
+				AND ct.phone like CONCAT ('%',#{customer.phone},'%')
+			</if>
+			<if test="contract != null and contract.code != null and contract.code != ''">
+				AND oc.code  like CONCAT ('%',#{contract.code},'%')
+			</if>
+			<if test="orderCode != null and orderCode!=''">
+				AND a.order_code = #{orderCode}
+			</if>
+			<if test="orderType != null">
+				AND a.order_type = #{orderType}
+			</if>
+
+		</where>
+
+		GROUP BY a.id
+
+		<if test="page !=null and page.orderBy != null and page.orderBy != ''">
+			ORDER BY ${page.orderBy}
+		</if>
+	</select>
+
+
+	<!-- Ashon 根据orderId 查询班级的应收费用订单费用 -->
+	<select id="findClassAmount" resultType="Order">
+		SELECT
+			<include refid="erpOrderColumns"/>
+		    <include refid="orderContractColumns"/>
+			,s.name AS "student.name",
+			s.teacher_id AS "student.teacher.id",
+			teach.name AS "student.teacher.name",/*招聘老师名称*/
+			off.name AS "student.teacher.office.name",/*招聘老师归属部门*/
+			cla.prepaid_amount AS "schoolClass.prepaidAmount",/*预定金*/
+			cla.tuition_amount AS "schoolClass.tuitionAmount",/*学费*/
+			cla.miscellaneous_amount AS "schoolClass.miscellaneousAmount",
+			rb.delivered_amount	AS "receivableBill.deliveredAmount"/*已交金额*/
+		FROM erp_order a
+		    LEFT JOIN erp_order_contract ocontract ON ocontract.order_id = a.id
+			LEFT JOIN school_student s ON a.student_id = s.id
+			LEFT JOIN sys_user teach ON teach.id = s.teacher_id
+			LEFT JOIN sys_office off ON off.id = teach.office_id
+			LEFT JOIN school_class_students scs ON scs.order_id = a.id
+			LEFT JOIN school_class cla ON cla.id = scs.class_id
+			LEFT JOIN erp_receivable_bill rb on a.id = rb.order_id
+		WHERE 1=1
+		<if test="id != null">
+			AND a.id = #{id}
+		</if>
+		GROUP BY a.id
+	</select>
+
+
+
+	<!--查询开票的员工学员-->
+	<select id="findPageOrderStudent" resultType="Order">
+		SELECT
+		a.id AS "id",
+		a.pay_type AS "payType",
+		a.status AS "status",
+		s.student_number AS "student.studentNumber",
+		s.sex AS "student.sex",
+		s.phone AS "student.phone",
+		s.stu_number AS "student.stuNumber",
+		s.student_status AS "student.studentStatus",
+		s.name AS "student.name",
+		s.apply_time AS "student.applyTime",
+		cla.class_name AS "student.schoolClassStudents.schoolClass.className",
+		cla.tuition_amount AS "student.schoolClassStudents.schoolClass.tuitionAmount",
+		cla.miscellaneous_amount AS "student.schoolClassStudents.schoolClass.miscellaneousAmount",
+		cla.real_begin_time AS "student.schoolClassStudents.schoolClass.realBeginTime",
+		cla.status AS "student.schoolClassStudents.schoolClass.status",
+		scl.lesson_name AS "student.schoolClassStudents.schoolClass.schoolClassToLesson.schoolClassLesson.lessonName"
+		FROM erp_order a
+		LEFT JOIN school_student s ON a.student_id = s.id
+		LEFT JOIN school_class_students scs ON scs.order_id = a.id
+		LEFT JOIN school_class cla ON cla.id = scs.class_id
+		LEFT JOIN school_class_to_lesson sctl on cla.id = sctl.class_id/*班级课程中间表*/
+		LEFT JOIN school_class_lesson scl ON scl.id = sctl.lesson_id
+		where 1=1
+		<if test="id != null">
+			AND a.id = #{id}
+		</if>
+		GROUP BY a.id
+	</select>
+
+	<select id="findIdListByStudentId" resultType="java.lang.Long">
+		SELECT id
+		FROM erp_order a
+		WHERE a.student_id = #{student.id}
+	</select>
+
+	<insert id="insert">
+		INSERT INTO erp_order(
+			id,
+			extend_id,
+			platform_id,
+			student_id,
+			customer_id,
+			sale_id,
+			resource_id,
+			num,
+			favorable_amount,
+			overall_amount,
+			payment_amount,
+			order_code,
+			pay_time,
+			finish_time,
+			pay_type,
+			order_type,
+			sign,
+			sign_status,
+			create_time,
+			create_user,
+			refund_status,
+			pay_status,
+			status
+		) VALUES (
+			#{id},
+			#{extendOrder.id},
+			#{platformId},
+			#{student.id},
+			#{customer.id},
+			#{sale.id},
+			#{customerResource.id},
+			#{num},
+			#{favorableAmount},
+			#{overallAmount},
+			#{paymentAmount},
+			#{orderCode},
+			#{payTime},
+			#{finishTime},
+			#{payType},
+			#{orderType},
+			#{sign},
+			#{signStatus},
+			#{createTime},
+			#{createUser},
+			#{refundStatus},
+			#{payStatus},
+			#{status}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE erp_order SET
+		sale_id = #{sale.id},
+		resource_id = #{customerResource.id},
+		sign_status = #{signStatus},
+		status = #{status}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateOrderNum">
+		UPDATE erp_order SET
+		num = #{num}
+		WHERE id = #{id}
+	</update>
+	<update id="updateOrderStatus">
+		UPDATE erp_order
+		<trim prefix="set" suffixOverrides=",">
+			<if test="status != null ">
+				status = #{status},
+			</if>
+			<if test="refundStatus != null ">
+				refund_status = #{refundStatus},
+			</if>
+			<if test="payStatus != null ">
+				pay_status = #{payStatus},
+			</if>
+		</trim>
+		WHERE id = #{id}
+	</update>
+
+	<update id="updatePaymentAmountAndStatusById">
+		UPDATE erp_order
+		<set>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="payStatus != null">
+				pay_status = #{payStatus},
+			</if>
+			<if test="paymentAmount != null">
+				payment_amount = #{paymentAmount},
+			</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateStatusById">
+		UPDATE erp_order SET
+		status = #{status}
+		WHERE
+		id = #{id}
+	</update>
+
+	<update id="updateStatusByStudentId">
+		UPDATE erp_order SET
+		status = #{status}
+		WHERE
+		student_id = #{student.id}
+	</update>
+
+	<update id="delete">
+		UPDATE erp_order SET
+		status = #{status}
+		WHERE id = #{id}
+	</update>
+
+	<select id="findOrderItemByOrder" resultType="OrderItem">
+		SELECT a.id AS "id",
+		a.order_id AS "order.id",
+		a.product_id AS "product.id",
+		a.sku_id AS  "productSku.id",
+		a.sale_price AS "salePrice",
+	  	a.num	AS "num",
+	  	a.amount	AS "amount",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status  AS "status",
+		cp.measure_way AS "product.measureWay",
+		cps.min_stock AS "productSku.minStock"
+		FROM erp_order_item a
+			LEFT JOIN erp_order eo ON eo.id = a.order_id
+		 	LEFT JOIN crm_product cp ON cp.id = a.product_id
+		 	LEFT JOIN crm_product_sku cps ON cps.id = a.sku_id
+
+		WHERE a.order_id = #{order.id} AND a.status=#{status}
+
+	</select>
+
+	<select id="findOrderItemInfoByOrder" resultType="OrderItem">
+		SELECT a.id AS "id",
+		a.order_id AS "order.id",
+		a.product_id AS "product.id",
+		a.sku_id AS  "productSku.id",
+		a.sale_price AS "salePrice",
+		a.num	AS "num",
+		a.amount	AS "amount",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status  AS "status",
+
+		eo.order_code AS "order.orderCode",
+
+		cp.title AS "product.title",
+		cp.measure_way AS "product.measureWay",
+		cs.skill_name AS "productSku.skill.skillName",
+		cs.category AS "productSku.skill.category",
+		cps.unit AS "productSku.unit",
+		cps.single AS "productSku.single",
+		cps.min_stock AS "productSku.minStock",
+		cps.max_stock AS "productSku.maxStock",
+		cps.skill_id AS "productSku.skill.id",
+		(SELECT count(*) FROM crm_dispatch WHERE order_item_id = a.id) AS "dispatchNum"
+
+		FROM erp_order_item a
+		LEFT JOIN erp_order eo ON eo.id = a.order_id
+		LEFT JOIN crm_product cp ON cp.id = a.product_id
+		LEFT JOIN crm_product_sku cps ON cps.id = a.sku_id
+		LEFT JOIN crm_skill cs ON cps.skill_id = cs.id
+
+		WHERE a.order_id = #{order.id} AND a.status=#{status}
+
+	</select>
+
+	<insert id="insertOrderItem">
+		INSERT INTO erp_order_item(
+		id,
+		order_id,
+		parent_product_id,
+		product_id,
+		sku_id,
+		sale_price,
+		num,
+		amount,
+		create_time,
+		create_user,
+		status
+		) VALUES (
+		#{id},
+		#{order.id},
+		#{parentProduct.id},
+		#{product.id},
+		#{productSku.id},
+		#{salePrice},
+		#{num},
+		#{amount},
+		#{createTime},
+		#{createUser},
+		#{status}
+
+		)
+	</insert>
+
+	<update id="updateOrderItem">
+		UPDATE erp_order_item SET
+		order_id = #{order.id},
+		<if test="parentProduct != null and parentProduct.id != null">
+			parent_product_id = #{parentProduct.id},
+		</if>
+		product_id = #{product.id},
+		sku_id = #{productSku.id},
+		sale_price = #{salePrice},
+		num = #{num},
+		amount = #{amount},
+		status = #{status}
+		WHERE id = #{id}
+	</update>
+	<update id="updateOrderItemStatus">
+		UPDATE erp_order_item SET
+		status = #{status}
+		WHERE order_id = #{order.id}
+	</update>
+
+	<select id="findContractCountByOrder" resultType="Integer">
+		  SELECT count(*) FROM erp_order_contract WHERE order_id=#{id}
+	</select>
+
+	<update id="insertOrderContract">
+		INSERT INTO erp_order_contract(
+		id,
+		order_id,
+		customer_id,
+		title,
+		code,
+		remark,
+		sign_time,
+		create_time,
+		create_user,
+		status
+		) VALUES (
+		#{id},
+		#{order.id},
+		#{customer.id},
+		#{title},
+		#{code},
+		#{remark},
+		#{signTime},
+		#{createTime},
+		#{createUser},
+		#{status}
+		)
+	</update>
+
+	<select id="findAllOrderPage" resultType="Order">
+		SELECT
+		<include refid="allOrderColumns"/>
+		FROM erp_order a
+		<include refid="allOrderJoins"/>
+		<where>
+			1=1
+			<if test="orderType != null">
+				AND a.order_type = #{orderType}
+			</if>
+			<if test="createTimeStart != null and createTimeStart != '' ">
+				AND date(a.create_time) &gt;= #{createTimeStart}
+			</if>
+			<if test="createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.create_time) &lt;= #{createTimeEnd}
+			</if>
+
+		</where>
+		GROUP BY a.id
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+
+	</select>
+
+<!--合同信息-->
+	<select id="getAllOrderById" resultType="Order">
+		SELECT
+		<include refid="allOrderColumns"/>
+		FROM erp_order a
+		<include refid="allOrderJoins"/>
+		WHERE a.id = #{id}
+		GROUP BY a.id
+	</select>
+
+	<!--客户管理-->
+	<select id="findListByCustomerId" resultType="Order">
+		SELECT
+		<include refid="erpOrderColumns"/>
+		,<include refid="customerColumns"/>
+		FROM erp_order a
+		<include refid="customerJoins"/>
+		WHERE a.customer_id = #{id}
+
+	</select>
+
+	<!-- 预约管理 根据OrderItemId查询详情 Ashon -->
+	<select id="getOrderItemById" resultType="OrderItem">
+		SELECT
+			a.id AS "id",
+			a.order_id AS "order.id",
+			a.product_id AS "product.id",
+			a.sku_id AS  "productSku.id",
+			a.sale_price AS "salePrice",
+			a.num	AS "num",
+			a.amount	AS "amount",
+			a.create_time AS "createTime",
+			a.create_user AS "createUser",
+			a.status  AS "status",
+
+			eo.order_code AS "order.orderCode",
+
+			cp.title AS "product.title",
+			cp.measure_way AS "product.measureWay",
+			cs.skill_name AS "productSku.skill.skillName",
+			cs.category AS "productSku.skill.category",
+			cps.unit AS "productSku.unit",
+			cps.single AS "productSku.single",
+			cps.min_stock AS "productSku.minStock",
+			cps.max_stock AS "productSku.maxStock",
+			cps.skill_id AS "productSku.skill.id"
+		FROM erp_order_item a
+			LEFT JOIN erp_order eo ON eo.id = a.order_id
+			LEFT JOIN crm_product cp ON cp.id = a.product_id
+			LEFT JOIN crm_product_sku cps ON cps.id = a.sku_id
+			LEFT JOIN crm_skill cs ON cps.skill_id = cs.id
+		WHERE a.id=#{id} AND a.status=#{status}
+	</select>
+</mapper>
