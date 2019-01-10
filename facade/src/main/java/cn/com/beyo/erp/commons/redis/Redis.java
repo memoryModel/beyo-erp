@@ -220,6 +220,22 @@ public class Redis{
         }
         return false;
     }
+
+    public String getValue(String key){
+        ShardedJedis shardedJedis = null;
+        try {
+            shardedJedis = shardedJedisPool.getResource();
+            return shardedJedis.get(key);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            logger.error("redis getValue error.", ex);
+            returnResource(shardedJedis);
+        } finally {
+            returnResource(shardedJedis);
+        }
+        return null;
+    }
+
     /**
      * 计数器-增加
      * */
@@ -229,6 +245,7 @@ public class Redis{
             shardedJedis = shardedJedisPool.getResource();
             return shardedJedis.incr(key);
         } catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("redis incr error.", ex);
             returnResource(shardedJedis);
         } finally {
@@ -362,6 +379,7 @@ public class Redis{
             return res;
         }catch (Exception e){
             e.printStackTrace();
+            logger.error("redis incrMQ error.", key + e);
             return null;
         }
     }
@@ -374,6 +392,7 @@ public class Redis{
             return Long.parseLong(shardedJedis.get(key));
         }catch (Exception e){
             e.printStackTrace();
+            logger.error("redis getMQ error.", key + e);
             return null;
         }
     }
@@ -389,6 +408,7 @@ public class Redis{
             shardedJedis = shardedJedisPool.getResource();
             return shardedJedis.zadd(key,score,member);
         } catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("redis zadd error.", ex);
             returnResource(shardedJedis);
         } finally {
@@ -406,7 +426,8 @@ public class Redis{
             shardedJedis = shardedJedisPool.getResource();
             return shardedJedis.zadd(key,scoreMembers);
         } catch (Exception ex) {
-            logger.error("redis zadd error.", ex);
+            ex.printStackTrace();
+            logger.error("redis zadd error.", key + ex);
             returnResource(shardedJedis);
         } finally {
             returnResource(shardedJedis);
@@ -425,7 +446,8 @@ public class Redis{
             shardedJedis = shardedJedisPool.getResource();
             return shardedJedis.zrevrange(key,start,end);
         } catch (Exception ex) {
-            logger.error("redis zrevrange error.", ex);
+            ex.printStackTrace();
+            logger.error("redis zrevrange error.", key + ex);
             returnResource(shardedJedis);
         } finally {
             returnResource(shardedJedis);
@@ -443,6 +465,7 @@ public class Redis{
             shardedJedis = shardedJedisPool.getResource();
             return shardedJedis.zremrangeByRank(key,start,end);
         } catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("redis zremrangebyrank error.", ex);
             returnResource(shardedJedis);
         } finally {
@@ -461,6 +484,7 @@ public class Redis{
             shardedJedis = shardedJedisPool.getResource();
             return shardedJedis.zcard(key);
         } catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("redis zcard error.", ex);
             returnResource(shardedJedis);
         } finally {
@@ -514,6 +538,7 @@ public class Redis{
             shardedJedis = shardedJedisPool.getResource();
             return shardedJedis.hget(key,field);
         } catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("redis hget error.", ex);
             returnResource(shardedJedis);
         } finally {
@@ -531,6 +556,7 @@ public class Redis{
             shardedJedis = shardedJedisPool.getResource();
             return shardedJedis.hmset(key,hash);
         } catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("redis hmset error.", ex);
             returnResource(shardedJedis);
         } finally {
@@ -548,6 +574,7 @@ public class Redis{
             shardedJedis = shardedJedisPool.getResource();
             return shardedJedis.hmget(key,fields);
         } catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("redis hmget error.", ex);
             returnResource(shardedJedis);
         } finally {
@@ -565,6 +592,7 @@ public class Redis{
             shardedJedis = shardedJedisPool.getResource();
             return shardedJedis.hdel(key,fields);
         } catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("redis hdel error.", ex);
             returnResource(shardedJedis);
         } finally {

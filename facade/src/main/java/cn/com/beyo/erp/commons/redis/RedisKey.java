@@ -39,5 +39,13 @@ public class RedisKey {
 
     public final static String HASH_CLASS_LESSON = "hash_class_lesson";
 
+    public final static String FLAG_EXAMINE_STORE = "flag_examine_store";
+
+    public final static String SORTEDSET_EXAMINE_STORE = "sortedset_examine_store";
+
+    public final static String HASH_EXAMINE_STORE = "hash_examine_store";
+
+    public final static String HASH_EXAMINE_STORE_QUESTION= "hash_examine_store_question";
+
 
 }
