@@ -8,12 +8,11 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/school/examineStore/list">题库管理列表</a></li>
-		<li class="active"><a href="${ctx}/school/examineStore/form?id=${examineStore.id}">题库管理<shiro:hasPermission name="school:examineStore:form">${not empty examineStore.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="school:examineStore:form">查看</shiro:lacksPermission></a></li>
+		<li class="active"><a href="${ctx}/school/examineStore/form?id=${examineStore.id}">题库管理${not empty examineStore.id?'修改':'添加'}</a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="examineStore" action="${ctx}/school/examineStore/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<input type="hidden" name="examJson" id="examJson"/>
-		<sys:message content="${message}"/>
 		<div class="control-group">
 			<label class="control-label">题库名称：</label>
 			<div class="controls">
@@ -85,9 +84,7 @@
 
 
 		<div class="form-actions">
-			<shiro:hasPermission name="school:examineStore:save">
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
-			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>

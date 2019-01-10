@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.school.examinestore.dao.ExamineStoreDao">
+    
+	<sql id="examineStoreColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.name AS "name",
+		a.subject AS "subject",
+		a.type AS "type",
+		a.remark AS "remark",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.status AS "status",
+		(SELECT COUNT(sesq.id) FROM school_exam_question sesq WHERE sesq.store_id=a.id AND sesq.status=0) AS "questionCount"
+
+	</sql>
+
+	<sql id="examineStoreJoins">
+	</sql>
+
+	<select id="get" resultType="ExamineStore">
+		SELECT 
+			<include refid="examineStoreColumns"/>
+		FROM school_examine_store a
+		<include refid="examineStoreJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="ExamineStore">
+		SELECT
+			<include refid="examineStoreColumns"/>
+		FROM school_examine_store a
+		<include refid="examineStoreJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			1=1
+			<if test="subject != null ">
+				AND a.subject = #{subject}
+			</if>
+			<if test="createTimeStart != null and createTimeStart != '' ">
+				AND date(a.create_time) &gt;= #{createTimeStart}
+			</if>
+
+			<if test="createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.create_time) &lt;= #{createTimeEnd}
+			</if>
+			<if test="type != null">
+				AND a.type = #{type}
+			</if>
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="ExamineStore">
+		SELECT
+			<include refid="examineStoreColumns"/>
+		FROM school_examine_store a
+		<include refid="examineStoreJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findStoreList" resultType="ExamineStore">
+		SELECT
+		a.name,a.id
+		FROM school_examine_store a
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		WHERE status = 0
+		<!-- 条件过滤需要添加的过滤条件 -->
+		${sqlMap.dsf}
+		GROUP BY name
+		ORDER BY name
+	</select>
+
+	<insert id="insert">
+		INSERT INTO school_examine_store(
+			id,
+			platform_id,
+			name,
+			subject,
+			type,
+			remark,
+			create_time,
+			create_user,
+			status
+		) VALUES (
+			#{id},
+			#{platformId},
+			#{name},
+			#{subject},
+			#{type},
+			#{remark},
+			#{createTime},
+			#{createUser},
+			#{status}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE school_examine_store SET
+			name = #{name},
+			subject = #{subject},
+			type = #{type},
+			remark = #{remark},
+			create_time = #{createTime},
+			create_user = #{createUser},
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE school_examine_store SET
+		status = #{status}
+		WHERE id = #{id}
+	</update>
+
+	<resultMap id="examineStoreMap" type="ExamineStore">
+		<id column="id" property="id"/>
+		<result column="platform_id" property="platformId"/>
+		<result column="name" property="name"/>
+		<result column="subject" property="subject"/>
+		<result column="type" property="type"/>
+		<result column="remark" property="remark"/>
+		<result column="status" property="status"/>
+		<result column="create_user" property="createUser"/>
+		<result column="create_time" property="createTime"/>
+		<result column="questionCount" property="questionCount"/>
+		<collection property="examQuestionList" ofType="ExamQuestion"
+					select="selectExamQuestionList" column="id"/>
+	</resultMap>
+
+	<resultMap id="examQuestionMap" type="cn.com.beyo.erp.modules.school.examineitems.entity.ExamQuestion">
+		<id column="id" property="id"/>
+		<result column="platform_id" property="platformId"/>
+		<result column="type" property="type"/>
+		<result column="title" property="title"/>
+		<result column="point" property="point"/>
+		<result column="status" property="status"/>
+		<result column="create_user" property="createUser"/>
+		<result column="create_time" property="createTime"/>
+		<collection property="answerList" ofType="ExamineAnswer"
+								select="getAnswerList" column="id"/>
+	</resultMap>
+
+	<select id="findStoreAllList" resultMap="examineStoreMap">
+		SELECT
+			a.id,
+			a.platform_id,
+			a.name,
+			a.subject,
+			a.type,
+			a.remark,
+			a.status,
+			a.create_user,
+			a.create_time,
+			(SELECT COUNT(sesq.id) FROM school_exam_question sesq WHERE sesq.store_id=a.id AND sesq.status=0) AS "questionCount"
+		FROM school_examine_store a
+		WHERE a.status = 0
+	</select>
+
+	<select id="selectExamQuestionList" resultMap="examQuestionMap" parameterType="java.lang.Long">
+		SELECT
+		id,
+		platform_id,
+		store_id,
+		type,
+		title,
+		point,
+		status,
+		create_user,
+		create_time
+		FROM
+		school_exam_question
+		WHERE status = 0 AND store_id = #{id}
+	</select>
+
+    <select id="getAnswerList" resultType="cn.com.beyo.erp.modules.school.examineitems.entity.ExamQuestion" parameterType="java.lang.Long">
+        SELECT
+        id AS "id",
+        platform_id AS "platformId",
+        reference AS "reference",
+        title AS "title",
+        solution AS "solution",
+        /*question_id AS "examQuestion.id",*/
+        status AS "status",
+        create_user AS "createUser",
+        create_time AS "createTime"
+        FROM
+        school_exam_answer
+        WHERE status = 0 AND question_id = #{id}
+    </select>
+</mapper>

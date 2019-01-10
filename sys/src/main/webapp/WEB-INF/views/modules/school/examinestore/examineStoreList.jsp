@@ -19,7 +19,7 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/school/examineStore/list">题库管理列表</a></li>
-		<shiro:hasPermission name="school:examineStore:form"><li><a href="${ctx}/school/examineStore/form">题库管理添加</a></li></shiro:hasPermission>
+		<li><a href="${ctx}/school/examineStore/form">题库管理添加</a></li>
 	</ul>
 	<form:form id="searchForm" modelAttribute="examineStore" action="${ctx}/school/examineStore/list" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
@@ -60,7 +60,6 @@
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
-	<sys:message content="${message}"/>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
@@ -93,8 +92,8 @@
 					<fmt:formatDate value="${examineStore.createTime}" pattern="yyyy-MM-dd HH:mm"/>
 				</td>
 				<td>
-					<c:if test="${examineStore.type==1}"> <shiro:hasPermission name="school:examineStore:form"><a href="${ctx}/school/examineStore/form?id=${examineStore.id}">修改</a></shiro:hasPermission></c:if>
-					<shiro:hasPermission name="school:examineStore:delete"><a href="${ctx}/school/examineStore/delete?id=${examineStore.id}" onclick="return confirmx('确认要删除该题库管理吗？', this.href)">删除</a></shiro:hasPermission>
+					<c:if test="${examineStore.type==1}"><a href="${ctx}/school/examineStore/form?id=${examineStore.id}">修改</a></c:if>
+					<a href="${ctx}/school/examineStore/delete?id=${examineStore.id}" onclick="return confirmx('确认要删除该题库管理吗？', this.href)">删除</a>
 				</td>
 			</tr>
 		</c:forEach>

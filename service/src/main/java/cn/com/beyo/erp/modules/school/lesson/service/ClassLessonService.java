@@ -142,7 +142,7 @@ public class ClassLessonService extends BeyoService<ClassLessonDao, ClassLesson>
 		if(set == null || set.size() == 0){
 			Map<String, Double> map = new HashMap<>();//用于添加sortedset类型
 			Map<String,String> hash = new HashMap<>();//用于添加hash类型
-			List<ClassLesson> classLessonList = dao.findList(classLesson);
+			List<ClassLesson> classLessonList = dao.findList(new ClassLesson());
 			if(classLessonList != null && classLessonList.size() > 0){
 				for(ClassLesson cl:classLessonList){
 					map.put(String.valueOf(cl.getId()),(double)cl.getCreateTime().getTime());

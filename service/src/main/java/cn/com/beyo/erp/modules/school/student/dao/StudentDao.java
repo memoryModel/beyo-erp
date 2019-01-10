@@ -29,5 +29,12 @@ public interface StudentDao extends BeyoDao<Student> {
 
     List<Student> findStudentClass(Student studentEnroll);
 
+    /**
+     * 改班级所有学员状态
+     * @param student
+     * @author Ashon
+     */
+    void updateStatusByClass(Student student);
+
 
 }

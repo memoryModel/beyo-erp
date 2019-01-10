@@ -46,4 +46,6 @@ public interface ClassStudentsDao extends BeyoDao<ClassStudents> {
     void updateStudentsForStudy(ClassStudents classStudents);
 
     List<ClassStudents> findListByStu(ClassStudents classStudents);
+
+    List<ClassStudents> findByParam(ClassStudents classStudents);
 }

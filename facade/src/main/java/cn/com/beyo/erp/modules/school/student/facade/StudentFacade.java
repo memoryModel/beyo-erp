@@ -2,6 +2,7 @@ package cn.com.beyo.erp.modules.school.student.facade;
 
 import cn.com.beyo.erp.commons.facade.BeyoFacade;
 import cn.com.beyo.erp.commons.persistence.Page;
+import cn.com.beyo.erp.modules.school.classes.entity.SchoolClass;
 import cn.com.beyo.erp.modules.school.student.entity.Student;
 
 import java.util.List;
@@ -24,4 +25,6 @@ public interface StudentFacade extends BeyoFacade<Student> {
                                    Double miscellaneousAmount,
                                    Double tuitionFavorable,
                                    String classId);
+
+    String updateStatus(SchoolClass aClass);
 }

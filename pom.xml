@@ -80,7 +80,7 @@
         <kryo-serializers.version>0.26</kryo-serializers.version>
         <fst.version>1.55</fst.version>
         <log4j.version>1.2.15</log4j.version>
-
+        <curator.version>4.0.1</curator.version>
 
 
     </properties>
@@ -772,6 +772,16 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>2.0.0.Alpha1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>${curator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>${curator.version}</version>
         </dependency>
         <!--<dependency>
             <groupId>fastdfs</groupId>

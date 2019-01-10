@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.school.examineianswer.dao.ExamAnswerDao">
+    
+	<sql id="examineAnswerColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.reference AS "reference",
+		a.title AS "title",
+		a.solution AS "solution",
+		a.question_id AS "examQuestion.id",
+		a.status AS "status",
+		a.create_user AS "createUser",
+		a.create_time AS "createTime"
+	</sql>
+
+    
+	<select id="get" resultType="ExamineAnswer">
+		SELECT 
+			<include refid="examineAnswerColumns"/>
+		FROM school_exam_answer a
+		
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ExamineAnswer">
+		SELECT 
+			<include refid="examineAnswerColumns"/>
+		FROM school_exam_answer a
+		
+		<where>
+			1=1
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ExamineAnswer">
+		SELECT 
+			<include refid="examineAnswerColumns"/>
+		FROM school_exam_answer a
+		
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAnswerListByQuestion" resultType="ExamineAnswer">
+		SELECT
+		<include refid="examineAnswerColumns"/>
+		FROM school_exam_answer a
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			a.question_id = #{examQuestion.id}
+			AND a.status = #{status}
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO school_exam_answer(
+			id,
+			platform_id,
+			reference,
+			title,
+			solution,
+			question_id,
+			status,
+			create_user,
+			create_time
+		) VALUES (
+			#{id},
+			#{platformId},
+			#{reference},
+			#{title},
+			#{solution},
+			#{examQuestion.id},
+			#{status},
+			#{createUser},
+			#{createTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE school_exam_answer SET
+			reference = #{reference},
+			title = #{title},
+			solution = #{solution},
+			question_id = #{examQuestion.id},
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	<update id="deleteAnswerByQuestion">
+		UPDATE school_exam_answer
+		SET status = #{status}
+		WHERE question_id in (SELECT id FROM school_exam_question WHERE store_id=#{examStore.id} AND status=#{examStore.status})
+	</update>
+	<update id="delete">
+		UPDATE school_exam_answer
+		SET status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

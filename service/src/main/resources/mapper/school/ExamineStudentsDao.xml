@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.school.examineinfo.dao.ExamineStudentsDao">
+    
+	<sql id="examineStudentsColumns">
+		a.id AS "id",
+		a.examine_id AS "examineInfo.id",
+		a.student_id AS "student.id",
+		a.class_id AS "schoolClass.id",
+		a.grade   AS "grade",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.pass_status AS "passStatus",
+		a.makeup_status AS "makeupStatus",
+		a.status  AS "status",
+
+
+		ei.examine_store_id AS "examineInfo.schoolExamineStore.id",
+		ei.examine_name AS "examineInfo.examineName",
+		ei.examine_type AS "examineInfo.examineType",
+		ei.examine_method AS "examineInfo.examineMethod",
+		ei.start_time AS "examineInfo.startTime",
+		ei.end_time AS "examineInfo.endTime",
+		ei.examine_length AS "examineInfo.examineLength",
+		ei.passing_grade AS "examineInfo.passingGrade",
+
+		ss.name AS "student.name",
+		ss.student_number AS "student.studentNumber",
+
+		sc.class_name AS "schoolClass.className"
+
+		/*cl.id AS "classLesson.id",
+		cl.lesson_name AS "classLesson.lessonName"*/
+
+	</sql>
+	
+	<sql id="examineStudentsJoins">
+		LEFT JOIN school_examine_info ei ON ei.id = a.examine_id
+		LEFT JOIN school_student ss ON ss.id = a.student_id
+		LEFT JOIN school_class sc ON sc.id = a.class_id
+	/*	LEFT JOIN school_class_to_lesson ctl ON ctl.class_id = sc.id
+		LEFT JOIN school_class_lesson cl ON cl.id = ei.lesson_id*/
+	</sql>
+    
+	<select id="get" resultType="ExamineStudents">
+		SELECT 
+			<include refid="examineStudentsColumns"/>
+		FROM school_examine_students a
+		<include refid="examineStudentsJoins"/>
+		WHERE a.id = #{id}
+		GROUP BY a.id
+	</select>
+	
+	<select id="findList" resultType="ExamineStudents">
+		SELECT 
+			<include refid="examineStudentsColumns"/>
+			FROM school_examine_students a
+		<include refid="examineStudentsJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			1=1
+			<if test="student != null and student.name != null and student.name != ''">
+				AND (ss.name LIKE CONCAT('%', #{student.name}, '%')
+				OR ss.student_number LIKE CONCAT('%', #{student.name}, '%')
+				)
+			</if>
+			<if test="schoolClass != null and schoolClass.className != null and schoolClass.className != ''">
+				AND sc.class_name LIKE CONCAT('%', #{schoolClass.className}, '%')
+			</if>
+			<if test="examineInfo != null and examineInfo.examineName != null and examineInfo.examineName != ''">
+				AND ei.examine_name LIKE CONCAT('%', #{examineInfo.examineName}, '%')
+			</if>
+			<!--<if test="classLesson != null and classLesson.lessonName != null and classLesson.lessonName != ''">
+				AND cl.lesson_name LIKE CONCAT('%', #{examineInfo.schoolClassLesson.lessonName}, '%')
+			</if>-->
+			<if test="examineInfo != null and examineInfo.examineType != null and examineInfo.examineType != ''">
+				AND ei.examine_type = #{examineInfo.examineType}
+			</if>
+			<if test="examineInfo != null and examineInfo.examineMethod != null and examineInfo.examineMethod != ''">
+				AND ei.examine_method = #{examineInfo.examineMethod}
+			</if>
+			<if test="examineInfo != null and examineInfo.infoStatus != null">
+				AND ei.info_status = #{examineInfo.infoStatus}
+				AND a.grade > 0
+			</if>
+			<if test="passStatus != null">
+				AND a.pass_status = #{passStatus}
+			</if>
+			<if test="makeupStatus != null and makeupStatus==1">
+				AND (a.makeup_status = 1 OR a.makeup_status IS NULL)
+			</if>
+			<if test="makeupStatus != null and makeupStatus!=1">
+				AND a.makeup_status = #{makeupStatus}
+			</if>
+			<if test="createTimeStart != null and createTimeStart != '' ">
+				AND date(a.create_time) &gt;= #{createTimeStart}
+			</if>
+			<if test="createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.create_time) &lt;= #{createTimeEnd}
+			</if>
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+			<if test="student != null and student.status!=null">
+				AND ss.status = #{student.status}
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+		GROUP BY a.id
+		ORDER BY a.create_time DESC
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+
+	</select>
+
+
+
+	<select id="selectStudent" resultType="ExamineStudents">
+		SELECT
+		<include refid="examineStudentsColumns"/>
+		FROM school_examine_students a
+		<include refid="examineStudentsJoins"/>
+		<where>
+			1=1
+			<if test="examineInfo != null and examineInfo.id != null">
+				AND a.examine_id = #{examineInfo.id}
+			</if>
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+
+
+	<select id="findAllList" resultType="ExamineStudents">
+		SELECT 
+			<include refid="examineStudentsColumns"/>
+		FROM school_examine_students a
+		<include refid="examineStudentsJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO school_examine_students(
+			id,
+			examine_id,
+			student_id,
+			class_id,
+			pass_status,
+			makeup_status,
+			create_time,
+			create_user,
+			status
+		) VALUES (
+			#{id},
+			#{examineInfo.id},
+			#{student.id},
+			#{schoolClass.id},
+			#{passStatus},
+			#{makeupStatus},
+			#{createTime},
+			#{createUser},
+			#{status}
+		)
+	</insert>
+
+	<!--修改成绩-->
+	<update id="update">
+		UPDATE school_examine_students SET 	
+			grade = #{grade},
+			pass_status = #{passStatus},
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+
+	<!--成绩录入-->
+	<update id="updateScore">
+		UPDATE school_examine_students SET
+			grade = #{grade},
+			pass_status = #{passStatus}
+		WHERE
+			id = #{id}
+	</update>
+	<update id="updateScoreByExamStuden">
+		UPDATE school_examine_students SET
+		grade = #{grade},
+		pass_status = #{passStatus}
+		WHERE
+		examine_id = #{examineInfo.id}
+		AND student_id = #{student.id}
+	</update>
+
+	
+	<update id="delete">
+
+	</update>
+
+	<select id="examineList" resultType="ExamineStudents">
+		SELECT
+			a.examine_id AS "examineInfo.id",
+			a.student_id AS "student.id",
+			ss.name AS "student.name",
+			ss.student_number AS "student.studentNumber",
+			sc.class_name AS "classStudents.schoolClass.className"
+		FROM school_examine_students a
+			LEFT JOIN school_student ss ON a.student_id = ss.id
+			LEFT JOIN (school_class sc LEFT JOIN school_class_students scs ON sc.id = scs.class_id) ON ss.id = scs.student_id
+
+		WHERE a.examine_id = #{id}
+	</select>
+
+	<select id="findStudent" resultType="ExamineStudents">
+		SELECT
+		a.examine_id AS "examineInfo.id",
+		a.student_id AS "student.id",
+		a.class_id  AS "schoolClass.id",
+		a.status AS "status",
+		ss.name AS "student.name",
+		ss.student_number AS "student.studentNumber"
+		FROM school_examine_students a
+		LEFT JOIN school_student ss ON a.student_id = ss.id
+		WHERE 1 = 1
+		   AND a.examine_id = #{examineInfo.id}
+		   AND a.status = #{status}
+	</select>
+	<update id="cleanExamineInfoStudents">
+		UPDATE school_examine_students a
+		SET a.status = #{status}
+		WHERE
+		a.examine_id = #{examineInfo.id}
+	</update>
+	<update id="updateExamineInfoStudents">
+		UPDATE school_examine_students a
+		SET a.makeup_status = #{makeupStatus}
+		WHERE
+			a.status = #{status}
+	    AND a.student_id = #{student.id}
+		AND a.class_id = #{schoolClass.id}
+		AND a.pass_status = #{passStatus}
+	</update>
+	<select id="findExamineInfoStudentByExamineInfo" resultType="ExamineStudents">
+		SELECT
+		a.student_id AS "student.id",
+		a.class_id  AS "schoolClass.id",
+		a.grade   AS "grade",
+
+		ss.name AS "student.name",
+		ss.student_number AS "student.studentNumber",
+		ss.phone AS "student.phone",
+		ss.sex AS "student.sex",
+
+		sc.class_name AS "schoolClass.className"
+
+		FROM school_examine_students a
+
+		LEFT JOIN school_student ss ON a.student_id = ss.id
+		LEFT JOIN school_class sc ON sc.id = a.class_id
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+
+		WHERE a.examine_id = #{examineInfo.id}
+		<!-- 条件过滤需要添加的过滤条件 -->
+		${sqlMap.dsf}
+		AND a.status=#{status}
+	</select>
+	<delete id="deleteReal">
+		select 1 from school_examine_students limit 1
+	</delete>
+</mapper>

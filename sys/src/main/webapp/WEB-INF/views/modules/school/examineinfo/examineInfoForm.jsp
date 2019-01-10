@@ -19,8 +19,8 @@
     </li>
     <li class="active">
         <a href="/school/examineInfo/form?id=${examineInfo.id}&examineStatus=${examineInfo.examineStatus}">
-            <shiro:hasPermission name="school:examineInfo:form">${not empty schoolExamineInfo.id?'修改':'新增'}</shiro:hasPermission>
-            <shiro:lacksPermission name="school:examineInfo:form">查看</shiro:lacksPermission>
+            ${not empty schoolExamineInfo.id?'修改':'新增'}
+            查看
             <c:if test="${examineInfo.examineStatus == 0}">
                 考试
             </c:if>
@@ -33,7 +33,6 @@
     <form:hidden path="id"/>
     <form:hidden path="examineStatus" id="examineStatus"/>
     <input type="hidden" id="classStudentJson"/>
-    <sys:message content="${message}"/>
     <div class="control-group">
         <label class="control-label">
             <c:if test="${examineInfo.examineStatus == 0}">
@@ -111,9 +110,11 @@
     <div class="control-group" id="teacher" style="display: none;">
         <label class="control-label">监考老师：</label>
         <div class="controls">
-            <sys:treeselect id="teacherId" name="teacher.id" value="${examineInfo.teacher.id}"
+            <input id="teacherIdId" name="teacher.id" type="hidden" value="${examineInfo.teacher.id}"/>
+            <input id="teacherIdName" name="teacher.name" readonly="readonly" type="text" value="${examineInfo.teacher.name}" data-msg-required=""  class="" style="" maxlength="255"/>
+            <%--<sys:treeselect id="teacherId" name="teacher.id" value="${examineInfo.teacher.id}"
                             labelName="teacher.name" labelValue="${examineInfo.teacher.name}"
-                            title="选择用户" url="/sys/office/treeData?type=3"  notAllowSelectParent="true"/>
+                            title="选择用户" url="/sys/office/treeData?type=3"  notAllowSelectParent="true"/>--%>
 
         </div>
     </div>
@@ -247,7 +248,7 @@
     </div>
 
     <div class="form-actions">
-        <shiro:hasPermission name="school:examineInfo:save"><input id="button" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+        <input id="button" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
         <input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
     </div>
 </form:form>

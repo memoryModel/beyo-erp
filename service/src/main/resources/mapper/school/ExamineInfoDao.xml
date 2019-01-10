@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.school.examineinfo.dao.ExamineInfoDao">
+    
+	<sql id="examineInfoColumns">
+		a.id AS "id",
+		a.class_id AS "schoolClass.id",
+		a.examine_store_id AS "schoolExamineStore.id",
+		a.examine_name AS "examineName",
+		a.examine_type AS "examineType",
+		a.examine_length AS "examineLength",
+		a.examine_method AS "examineMethod",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.examine_status AS "examineStatus",
+		a.disbursement_type AS "disbursementType",
+		a.single_choice_num AS "singleChoiceNum",
+		a.multi_choice_num AS "multiChoiceNum",
+		a.single_choice_grade AS "singleChoiceGrade",
+		a.multi_choice_grade AS "multiChoiceGrade",
+		a.passing_grade AS "passingGrade",
+		a.remark AS "remark",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser",
+		a.info_status AS "infoStatus",
+		a.status AS "status",
+		a.teacher_id AS "teacher.id"
+        ,sc.class_name AS "schoolClass.className"
+		/*,scl.lesson_name AS "schoolClassLesson.lessonName"*/
+		,ese.name AS "erpStudentEnroll.name"
+		,ses.name AS "schoolExamineStore.name"
+		,su.name AS "teacher.name"
+	</sql>
+	
+	<sql id="examineInfoJoins">
+		LEFT JOIN school_class sc ON sc.id = a.class_id
+		/*LEFT JOIN school_class_lesson scl ON scl.id = a.lesson_id*/
+		LEFT JOIN school_info_students sis ON sis.info_id=a.id
+		LEFT JOIN school_student ese ON ese.id = sis.student_id
+		LEFT JOIN school_examine_store ses ON ses.id = a.examine_store_id
+		LEFT JOIN sys_user su ON a.teacher_id = su.id
+	</sql>
+    
+	<select id="get" resultType="ExamineInfo">
+		SELECT 
+			<include refid="examineInfoColumns"/>
+		FROM school_examine_info a
+		<include refid="examineInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ExamineInfo">
+		SELECT 
+			<include refid="examineInfoColumns"/>,
+			(select count(id) from school_examine_students ses where ses.examine_id = a.id and ses.status = 0) as studentCount
+		FROM school_examine_info a
+		<include refid="examineInfoJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		<where>
+			1=1
+			<if test="examineName != null and examineName != ''">
+				AND a.examine_name LIKE CONCAT('%', #{examineName}, '%')
+			</if>
+			<if test="examineType != null and examineType != ''">
+				AND a.examine_type = #{examineType}
+			</if>
+			<if test="examineMethod != null and examineMethod != ''">
+				AND a.examine_method = #{examineMethod}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND a.start_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.end_time &lt;= #{endTime}
+			</if>
+			<if test="infoStatus != null">
+				AND a.info_status = #{infoStatus}
+			</if>
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+			<if test="createTimeStart != null and createTimeStart != '' ">
+				AND date(a.create_time) &gt;= #{createTimeStart}
+			</if>
+			<if test="createTimeEnd != null and createTimeEnd != ''">
+				AND date(a.create_time) &lt;= #{createTimeEnd}
+			</if>
+			<if test="schoolExamineStore != null and schoolExamineStore.id != null and schoolExamineStore.id != ''">
+				AND a.examine_store_id LIKE CONCAT('%', #{schoolExamineStore.id}, '%')
+			</if>
+			<!-- 条件过滤需要添加的过滤条件 -->
+			${sqlMap.dsf}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findInfoName" resultType="ExamineInfo">
+		SELECT
+			examine_name,id
+		FROM school_examine_info
+		GROUP BY examine_name
+		ORDER BY examine_name
+	</select>
+
+	<select id="findAllList" resultType="ExamineInfo">
+		SELECT 
+			<include refid="examineInfoColumns"/>
+		FROM school_examine_info a
+		<include refid="examineInfoJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findExamInfoBySchedule" resultType="ExamineInfo">
+		SELECT * FROM school_examine_info
+		WHERE status=#{status}
+		AND info_status!=#{infoStatus}
+		AND (start_time>#{startTime} OR end_time>#{startTime})
+		ORDER BY start_time ASC
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO school_examine_info(
+			id,
+			platform_id,
+			class_id,
+			examine_store_id,
+			examine_name,
+			examine_type,
+			examine_length,
+			examine_method,
+			start_time,
+			end_time,
+			examine_status,
+			disbursement_type,
+			single_choice_num,
+			multi_choice_num,
+			single_choice_grade,
+			multi_choice_grade,
+			passing_grade,
+			remark,
+			teacher_id,
+			create_time,
+			create_user,
+			info_status,
+			status
+		) VALUES (
+			#{id},
+			#{platformId},
+			#{schoolClass.id},
+			#{schoolExamineStore.id},
+			#{examineName},
+			#{examineType},
+			#{examineLength},
+			#{examineMethod},
+			#{startTime},
+			#{endTime},
+			#{examineStatus},
+			#{disbursementType},
+			#{singleChoiceNum},
+			#{multiChoiceNum},
+			#{singleChoiceGrade},
+			#{multiChoiceGrade},
+			#{passingGrade},
+			#{remark},
+			#{teacher.id},
+			#{createTime},
+			#{createUser},
+			#{infoStatus},
+			#{status}
+		)
+	</insert>
+
+
+
+
+	<update id="update">
+		UPDATE school_examine_info SET 	
+			platform_id = #{platformId},
+			class_id = #{schoolClass.id},
+			examine_store_id = #{schoolExamineStore.id},
+			examine_name = #{examineName},
+			examine_type = #{examineType},
+			examine_length = #{examineLength},
+			examine_method = #{examineMethod},
+			start_time = #{startTime},
+			end_time = #{endTime},
+			disbursement_type = #{disbursementType},
+			single_choice_num = #{singleChoiceNum},
+			multi_choice_num = #{multiChoiceNum},
+			single_choice_grade = #{singleChoiceGrade},
+			multi_choice_grade = #{multiChoiceGrade},
+			passing_grade = #{passingGrade},
+			remark = #{remark},
+			teacher_id = #{teacher.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE school_examine_info SET
+		status = #{status}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateExamStore">
+		UPDATE school_examine_info a SET
+		a.examine_store_id = #{schoolExamineStore.id}
+		WHERE a.id = #{id}
+	</update>
+
+	<update id="updateStatus">
+		UPDATE school_examine_info a SET
+		a.status = #{status}
+		WHERE a.id = #{id}
+	</update>
+
+	<update id="updateInfoStatus">
+		UPDATE school_examine_info a SET
+		a.info_status = #{infoStatus}
+		WHERE a.id = #{id}
+	</update>
+
+</mapper>

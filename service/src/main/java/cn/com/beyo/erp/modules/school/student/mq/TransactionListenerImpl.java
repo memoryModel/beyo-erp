@@ -9,9 +9,11 @@ import cn.com.beyo.erp.modules.school.classes.entity.SchoolClass;
 import cn.com.beyo.erp.modules.school.classes.service.ClassService;
 import cn.com.beyo.erp.modules.school.clessstudents.entity.ClassStudents;
 import cn.com.beyo.erp.modules.school.clessstudents.service.ClassStudentsService;
+import cn.com.beyo.erp.modules.school.examineitems.entity.ExamQuestion;
 import cn.com.beyo.erp.modules.school.student.entity.Student;
 import cn.com.beyo.erp.modules.school.student.service.StudentService;
 import libs.fastjson.com.alibaba.fastjson.JSON;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.common.message.Message;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -45,6 +48,7 @@ public class TransactionListenerImpl implements TransactionListener{
             Integer classRealNum = (Integer)params.get("classRealNum");
             Long orderId = (Long)params.get("orderId");
             Integer currentVersion = (Integer)params.get("currentVersion");
+            String studentNumber = (String)params.get("studentNumber");
             SchoolClass schoolClass = new SchoolClass();
             schoolClass.setId(schoolClassId);
             schoolClass.setClassRealNum(classRealNum);
@@ -57,7 +61,7 @@ public class TransactionListenerImpl implements TransactionListener{
                 if(student.getStatus()!= StudentStatus.STUDY.getValue())student.setStatus(StudentStatus.UNREAD.getValue());//学员状态 设置为 0.未读
 
                 if(null==student.getStudentNumber() || student.getStudentNumber().trim().equals("")){
-                    student.setStudentNumber(CodeUtil.genOrderNo(CodeUtil.CODE_PREFIX_STUNUM));
+                    student.setStudentNumber(studentNumber);
                 }
                 studentService.update(student);
 
@@ -81,6 +85,31 @@ public class TransactionListenerImpl implements TransactionListener{
 
     @Override
     public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
-        return null;
+        try{
+            Map<String,Object> params = JSON.parseObject(new String(messageExt.getBody()),Map.class);
+            Long studentId = (Long)params.get("studentId");
+            String studentNumber = (String)params.get("studentNumber");
+            Long schoolClassId = (Long)params.get("schoolClassId");
+            Integer classRealNum = (Integer)params.get("classRealNum");
+            Student student = studentService.get(studentId);
+            SchoolClass schoolClass = classService.get(schoolClassId);
+            ClassStudents classStudents = new ClassStudents();
+            classStudents.setStudent(new Student(studentId));
+            classStudents.setSchoolClass(new SchoolClass(schoolClassId));
+            List<ClassStudents> classStudentsList = classStudentsService.findByParam(classStudents);
+            if(StringUtils.isNoneBlank(studentNumber) &&
+                    studentNumber.equals(student.getStudentNumber()) &&
+                    classRealNum.intValue() == schoolClass.getClassRealNum().intValue() &&
+                    classStudentsList != null &&
+                    classStudentsList.size() == 1){
+                return LocalTransactionState.COMMIT_MESSAGE;
+            }else{
+                return LocalTransactionState.ROLLBACK_MESSAGE;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return LocalTransactionState.UNKNOW;
+        }
     }
 }

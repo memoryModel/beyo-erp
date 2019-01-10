@@ -56,6 +56,31 @@
                         interface="cn.com.beyo.erp.modules.school.lesson.facade.LessonFacade"
                         check="false"
                         url="dubbo://localhost:20882"/>
+    <!-- 试题答案 -->
+    <dubbo:reference    id="examineAnswerFacade"
+                        interface="cn.com.beyo.erp.modules.school.examineianswer.facade.ExamineAnswerFacade"
+                        check="false"
+                        url="dubbo://localhost:20882"/>
+    <!-- 考试 -->
+    <dubbo:reference    id="examineInfoFacade"
+                        interface="cn.com.beyo.erp.modules.school.examineinfo.facade.ExamineInfoFacade"
+                        check="false"
+                        url="dubbo://localhost:20882"/>
+    <!-- 试题 -->
+    <dubbo:reference    id="examQuestionFacade"
+                        interface="cn.com.beyo.erp.modules.school.examineitems.facade.ExamQuestionFacade"
+                        check="false"
+                        url="dubbo://localhost:20882"/>
+    <!-- 题库 -->
+    <dubbo:reference    id="examineStoreFacade"
+                        interface="cn.com.beyo.erp.modules.school.examinestore.facade.ExamineStoreFacade"
+                        check="false"
+                        url="dubbo://localhost:20882"/>
+    <!-- 考试学生 -->
+    <dubbo:reference    id="examineStudentsFacade"
+                        interface="cn.com.beyo.erp.modules.school.examineinfo.facade.ExamineStudentsFacade"
+                        check="false"
+                        url="dubbo://localhost:20882"/>
 
     <!-- 订单 -->
     <dubbo:reference    id="orderFacade"

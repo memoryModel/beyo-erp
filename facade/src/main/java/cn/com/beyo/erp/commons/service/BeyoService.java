@@ -92,6 +92,8 @@ public abstract class BeyoService<D extends BeyoDao<T>, T extends DataVo<T>> ext
 			}
 		}
 		entity.setCreateTime(new Date());
+		entity.setPlatformId(100000000000000000L);
+		entity.setCreateUser(1L);
 		dao.insert(entity);
 
 	}

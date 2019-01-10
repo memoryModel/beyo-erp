@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.school.examineitems.dao.ExamQuestionDao">
+    
+	<sql id="examQuestionColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.store_id  AS "examineStore.id",
+		a.type AS "type",
+		a.title AS "title",
+		a.point AS "point",
+		a.status AS "status",
+		a.create_user AS "createUser",
+		a.create_time AS "createTime",
+
+		ses.name AS "examineStore.name"
+	</sql>
+	
+	<sql id="examQuestionJoins">
+		LEFT JOIN school_examine_store ses ON ses.id = a.store_id
+	</sql>
+    
+	<select id="get" resultType="ExamQuestion">
+		SELECT 
+			<include refid="examQuestionColumns"/>
+		FROM school_exam_question a
+		<include refid="examQuestionJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="ExamQuestion">
+		SELECT 
+			<include refid="examQuestionColumns"/>
+		FROM school_exam_question a
+		<include refid="examQuestionJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+
+	<select id="findQuestionListByStore" resultType="ExamQuestion">
+		SELECT
+		<include refid="examQuestionColumns"/>
+		FROM school_exam_question a
+		<include refid="examQuestionJoins"/>
+		<!-- 权限过滤需要的两张表 -->
+		LEFT JOIN sys_user AS uu ON uu.id = a.create_user
+		LEFT JOIN sys_office AS so ON so.id = uu.office_id
+		WHERE a.store_id = #{examineStore.id} AND a.status = #{status}
+		<!-- 条件过滤需要添加的过滤条件 -->
+		${sqlMap.dsf}
+	</select>
+	<select id="findQuestionListByRandom" resultType="ExamQuestion">
+		SELECT
+		<include refid="examQuestionColumns"/>
+		FROM school_exam_question a
+		<include refid="examQuestionJoins"/>
+		WHERE a.store_id = #{examineStore.id}
+		AND a.status = #{status}
+		AND a.type = #{type}
+		ORDER BY rand() LIMIT #{limit}
+	</select>
+
+	<select id="findQuestionListByPaper" resultType="ExamQuestion">
+		SELECT
+
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.store_id  AS "examineStore.id",
+		a.type AS "type",
+		a.title AS "title",
+		a.point AS "point",
+		a.status AS "status",
+		a.create_user AS "createUser",
+		a.create_time AS "createTime"
+
+		FROM school_exam_question a,school_examine_paper p
+		WHERE
+		a.id = p.examine_items_id
+
+		AND p.examine_id = #{examineInfo.id}
+		AND p.examine_store_id = #{examineStore.id}
+		AND p.status = #{status}
+		AND p.student_id = #{student.id}
+
+		AND a.status = #{status}
+
+		ORDER BY a.create_time ASC
+	</select>
+
+
+	<select id="findAllList" resultType="ExamQuestion">
+		SELECT 
+			<include refid="examQuestionColumns"/>
+		FROM school_exam_question a
+		<include refid="examQuestionJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO school_exam_question(
+			id,
+			platform_id,
+			store_id,
+			type,
+			title,
+			point,
+			status,
+			create_user,
+			create_time
+		) VALUES (
+			#{id},
+			#{platformId},
+			#{examineStore.id},
+			#{type},
+			#{title},
+			#{point},
+			#{status},
+			#{createUser},
+			#{createTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE school_exam_question SET
+			store_id = #{examineStore.id},
+			type = #{type},
+			title = #{title},
+		  	point = #{point}
+		WHERE id = #{id}
+	</update>
+	<update id="deleteQuestionByStore">
+		UPDATE school_exam_question
+		SET status = #{status}
+		WHERE store_id = #{examineStore.id}
+	</update>
+	<update id="delete">
+		UPDATE school_exam_question
+		SET status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

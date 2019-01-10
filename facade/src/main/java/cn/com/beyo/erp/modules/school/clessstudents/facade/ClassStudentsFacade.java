@@ -8,6 +8,8 @@ import java.util.List;
 public interface ClassStudentsFacade extends BeyoFacade<ClassStudents> {
 
     List<ClassStudents> findListByStu(ClassStudents classStudents);
+
+    List<ClassStudents> findByParam(ClassStudents classStudents);
 }
 
 

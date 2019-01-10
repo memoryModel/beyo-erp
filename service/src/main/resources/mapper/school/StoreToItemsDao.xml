@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.school.examinestore.dao.StoreToItemsDao">
+    
+	<sql id="storeToItemsColumns">
+		a.id AS "id",
+		a.store_id AS "examineStore.id",
+		a.question_id AS "examQuestion.id"
+	</sql>
+	
+	<sql id="storeToItemsJoins">
+		LEFT JOIN school_exam_question sei ON sei.id=a.question_id
+		LEFT JOIN school_examine_store ses ON ses.id = a.store_id
+	</sql>
+    
+	<select id="get" resultType="StoreToItems">
+		SELECT 
+			<include refid="storeToItemsColumns"/>
+		FROM school_store_items a
+		<include refid="storeToItemsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="StoreToItems">
+		SELECT 
+			<include refid="storeToItemsColumns"/>
+		FROM school_store_items a
+		<include refid="storeToItemsJoins"/>
+		<where>
+			1=1
+			<if test="examineStore != null and examineStore.id != null">
+				AND a.store_id = #{examineStore.id}
+			</if>
+			<if test="examQuestion != null and examQuestion.id != null">
+				AND a.question_id = #{examQuestion.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="StoreToItems">
+		SELECT 
+			<include refid="storeToItemsColumns"/>
+		FROM school_store_items a
+		<include refid="storeToItemsJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO school_store_items(
+			id,
+			store_id,
+			question_id
+		) VALUES (
+			#{id},
+			#{examineStore.id},
+			#{examQuestion.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE school_store_items SET
+			store_id = #{examineStore.id},
+			question_id = #{examQuestion.id}
+		WHERE store_id = #{examineStore.id}
+	</update>
+	
+	<update id="delete">
+
+	</update>
+
+
+	<delete id="deleteReal">
+		UPDATE school_store_items
+		WHERE store_id = #{examineStore.id}
+	</delete>
+</mapper>

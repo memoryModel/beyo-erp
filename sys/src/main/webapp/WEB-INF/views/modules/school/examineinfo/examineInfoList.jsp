@@ -28,10 +28,8 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<shiro:hasPermission name="school:examineInfo:list">
 			<li class="active"><a href="${ctx}/school/examineInfo/list">考试管理</a></li>
-		</shiro:hasPermission>
-		<shiro:hasPermission name="school:examineInfo:form"><li><a href="${ctx}/school/examineInfo/form">新增考试</a></li></shiro:hasPermission>
+		<li><a href="${ctx}/school/examineInfo/form">新增考试</a></li>
 	</ul>
 	<form:form id="searchForm" modelAttribute="examineInfo" action="${ctx}/school/examineInfo/list" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
@@ -88,7 +86,6 @@
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
-	<sys:message content="${message}"/>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
@@ -144,16 +141,16 @@
 				</td>
 				<td>
 					<c:if test="${schoolExamineInfo.infoStatus==0}">
-						<shiro:hasPermission name="school:examineInfo:form"><a href="${ctx}/school/examineInfo/form?id=${schoolExamineInfo.id}">修改</a></shiro:hasPermission>
-						<shiro:hasPermission name="school:examineInfo:delete"><a href="${ctx}/school/examineInfo/delete?id=${schoolExamineInfo.id}" onclick="return confirmx('确认要删除该考试吗？', this.href)">删除</a></shiro:hasPermission>
-						<shiro:hasPermission name="school:examineInfo:form"><a href="${ctx}/school/examineInfo/gen?id=${schoolExamineInfo.id}" onclick="return confirmx('发放试卷后系统会根据设置的试卷规则生成每个学员的试卷<br>如果为在线考试则学员会在手机端收到考卷<br>确定发放试卷？', this.href)">发放考卷</a></shiro:hasPermission>
+						<a href="${ctx}/school/examineInfo/form?id=${schoolExamineInfo.id}">修改</a>
+						<a href="${ctx}/school/examineInfo/delete?id=${schoolExamineInfo.id}" onclick="return confirmx('确认要删除该考试吗？', this.href)">删除</a>
+						<a href="${ctx}/school/examineInfo/gen?id=${schoolExamineInfo.id}" onclick="return confirmx('发放试卷后系统会根据设置的试卷规则生成每个学员的试卷<br>如果为在线考试则学员会在手机端收到考卷<br>确定发放试卷？', this.href)">发放考卷</a>
 					</c:if>
 					<c:if test="${schoolExamineInfo.infoStatus==1}">
-						<shiro:hasPermission name="school:examineInfo:delete"><a href="${ctx}/school/examineInfo/stop?id=${schoolExamineInfo.id}" onclick="return confirmx('结束考试后系统会将该考试终止，老师可操作录入学员成绩<br>如果为在线考试则学员在手机端将不可再答题<br>确认提前结束考试？', this.href)">结束考试</a></shiro:hasPermission>
+						<a href="${ctx}/school/examineInfo/stop?id=${schoolExamineInfo.id}" onclick="return confirmx('结束考试后系统会将该考试终止，老师可操作录入学员成绩<br>如果为在线考试则学员在手机端将不可再答题<br>确认提前结束考试？', this.href)">结束考试</a>
 					</c:if>
 
 					<c:if test="${schoolExamineInfo.infoStatus ==2 }">
-						<shiro:hasPermission name="school:examineStudents:insertScore"><a href="${ctx}/school/examineInfo/studentScore?id=${schoolExamineInfo.id}">成绩录入</a></shiro:hasPermission>
+						<a href="${ctx}/school/examineInfo/studentScore?id=${schoolExamineInfo.id}">成绩录入</a>
 					</c:if>
 				</td>
 			</tr>

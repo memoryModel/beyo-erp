@@ -137,4 +137,9 @@ public class ClassStudentsService extends BeyoService<ClassStudentsDao, ClassStu
 	public List<ClassStudents> findAllList(ClassStudents classStudents) {
 		return classStudentsDao.findAllList(classStudents);
 	}
+
+	@Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.DEFAULT,readOnly = true)
+	public List<ClassStudents> findByParam(ClassStudents classStudents){
+		return dao.findByParam(classStudents);
+	}
 }

@@ -47,6 +47,28 @@
 		AND a.student_id = ss.id
 		GROUP By a.id
 	</select>
+
+	<select id="findByParam" resultMap="ClassStudents">
+		SELECT
+		<include refid="schoolClassStudentsColumns"/>
+		FROM school_class sc,
+		school_class_students a,
+		school_student ss
+		<include refid="schoolClassStudentsJoins"/>
+		WHERE
+		a.class_id=sc.id
+		AND a.student_id = ss.id
+		<if test="id != null">
+			AND a.id = #{id}
+		</if>
+		<if test="student != null and student.id != null">
+			AND a.student_id = #{student.id}
+		</if>
+		<if test="schoolClass != null and schoolClass.id != null">
+			AND a.class_id = #{schoolClass.id}
+		</if>
+		GROUP By a.id
+	</select>
 	
 	<select id="findList" resultType="ClassStudents">
 		SELECT 

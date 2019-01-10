@@ -10,7 +10,6 @@
 <br>
 	<form:form id="inputForm" modelAttribute="examQuestion" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>
 		<div class="control-group">
 			<label class="control-label">试题题目：</label>
 			<div class="controls">

@@ -53,4 +53,24 @@
     <dubbo:service  timeout="80000"
                     interface="cn.com.beyo.erp.modules.school.lesson.facade.LessonFacade"
                     ref="classLessonService"/>
+    <!-- 试题答案 -->
+    <dubbo:service  timeout="80000"
+                    interface="cn.com.beyo.erp.modules.school.examineianswer.facade.ExamineAnswerFacade"
+                    ref="examAnswerService"/>
+    <!-- 考试 -->
+    <dubbo:service  timeout="80000"
+                    interface="cn.com.beyo.erp.modules.school.examineinfo.facade.ExamineInfoFacade"
+                    ref="examineInfoService"/>
+    <!-- 试题 -->
+    <dubbo:service  timeout="80000"
+                    interface="cn.com.beyo.erp.modules.school.examineitems.facade.ExamQuestionFacade"
+                    ref="examQuestionService"/>
+    <!-- 题库 -->
+    <dubbo:service  timeout="80000"
+                    interface="cn.com.beyo.erp.modules.school.examinestore.facade.ExamineStoreFacade"
+                    ref="examineStoreService"/>
+    <!-- 考试学生 -->
+    <dubbo:service  timeout="80000"
+                    interface="cn.com.beyo.erp.modules.school.examineinfo.facade.ExamineStudentsFacade"
+                    ref="examineStudentsService"/>
 </beans>
