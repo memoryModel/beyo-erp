@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 @Component
 public class PayConsumer{
@@ -135,12 +136,17 @@ public class PayConsumer{
                 String result = orderService.saveOrder(order,orderContract,receivableBill);
                 if("fail".equals(result)){
                     //加日志
+                    if(msg.getReconsumeTimes() == 2){//如果又重试了2次还不行就直接返回成功，这条信息加日志
+                        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+                    }
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }catch (Exception e){
                 e.printStackTrace();
-                //加日志
+                if(msg.getReconsumeTimes() == 2){//如果又重试了2次还不行就直接返回成功，这条信息加日志
+                    return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+                }
                 return ConsumeConcurrentlyStatus.RECONSUME_LATER;
             }
         }

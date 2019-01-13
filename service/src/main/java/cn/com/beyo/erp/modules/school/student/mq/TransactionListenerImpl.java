@@ -20,11 +20,15 @@ import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 @Component
 public class TransactionListenerImpl implements TransactionListener{
@@ -40,6 +44,7 @@ public class TransactionListenerImpl implements TransactionListener{
 
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.DEFAULT,rollbackFor = Exception.class)
     public LocalTransactionState executeLocalTransaction(Message message, Object o) {
         System.err.println("----------执行本地事务单元-------------");
         try{
@@ -49,6 +54,7 @@ public class TransactionListenerImpl implements TransactionListener{
             Long orderId = (Long)params.get("orderId");
             Integer currentVersion = (Integer)params.get("currentVersion");
             String studentNumber = (String)params.get("studentNumber");
+
             SchoolClass schoolClass = new SchoolClass();
             schoolClass.setId(schoolClassId);
             schoolClass.setClassRealNum(classRealNum);
@@ -74,11 +80,13 @@ public class TransactionListenerImpl implements TransactionListener{
                 classStudentsService.save(classStudents);//新增班级学生
                 return LocalTransactionState.COMMIT_MESSAGE;
             }else{//没有更新成功的话，则让MQ的prepare状态的消息回滚
+                //加日志
                 return LocalTransactionState.ROLLBACK_MESSAGE;
             }
         }catch (Exception e){
             e.printStackTrace();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            //加日志
             return LocalTransactionState.ROLLBACK_MESSAGE;
         }
     }

@@ -25,7 +25,9 @@ import cn.com.beyo.erp.modules.school.student.mq.TransactionProducer;
 import com.alibaba.fastjson.JSON;
 import org.apache.curator.framework.recipes.locks.InterProcessMultiLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.client.producer.TransactionSendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @Service(value = "studentService")
@@ -225,14 +228,14 @@ public class StudentService extends BeyoService<StudentDao, Student> implements 
 
                 Message message = new Message(TX_PAY_TOPIC,TX_PAY_TAGS,keys, JSON.toJSONString(params).getBytes());
                 TransactionSendResult transactionSendResult = transactionProducer.sendMessage(message, student);
-
+                if(transactionSendResult.getSendStatus() == SendStatus.SEND_OK){
+                    return "success";
+                }
             }
-
+            return "fail";
         }catch (Exception e){
             e.printStackTrace();
             return "fail";
         }
-
-        return "success";
     }
 }
