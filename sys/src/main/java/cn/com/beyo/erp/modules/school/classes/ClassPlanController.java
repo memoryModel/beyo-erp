@@ -70,7 +70,6 @@ public class ClassPlanController extends BaseController {
 	 * @param model
 	 * @return 跳转开班计划信息列表页面
 	 */
-	@RequiresPermissions("school:classPlan:list")
 	@RequestMapping(value = "list")
 	public String list(SchoolClass aClass, HttpServletRequest request, HttpServletResponse response, Model model) {
 		aClass.setStatus(ClassPlanStatus.READYCREAT.getValue());
@@ -88,8 +87,6 @@ public class ClassPlanController extends BaseController {
 			addMessage(redirectAttributes, "开班失败");
 			return "redirect:/school/classPlan/list?repage";
 		}
-
-
 		String result = studentFacade.updateStatus(aClass);
 		if("success".equals(result)){
 			addMessage(redirectAttributes, "开班成功,请对该班级排课！");

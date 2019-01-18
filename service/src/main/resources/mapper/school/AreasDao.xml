@@ -26,7 +26,7 @@
 	<select id="getAreasList" resultType="Areas">
 		SELECT
 		area_name,id
-		FROM school_area a
+		FROM school_area
 		WHERE status = 0
 		GROUP BY area_name
 	</select>

@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class ClassStudents extends DataVo<ClassStudents> {
 
-	private cn.com.beyo.erp.modules.school.student.entity.Student student;     //报班学生
+	private Student student;     //报班学生
 	private Employee erpEmployee;     //报班员工
 	private SchoolClass schoolClass;     //班级
 	private Order order;     //订单

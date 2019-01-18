@@ -48,7 +48,7 @@
 		GROUP By a.id
 	</select>
 
-	<select id="findByParam" resultMap="ClassStudents">
+	<select id="findByParam" resultType="ClassStudents">
 		SELECT
 		<include refid="schoolClassStudentsColumns"/>
 		FROM school_class sc,
