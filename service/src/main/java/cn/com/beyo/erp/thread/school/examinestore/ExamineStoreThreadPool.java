@@ -19,8 +19,8 @@ public class ExamineStoreThreadPool {
     public ExamineStoreThreadPool(){
         ArrayBlockingQueue arrayBlockingQueue = new ArrayBlockingQueue(20);
         this.thradPool =
-                new ThreadPoolExecutor(5,
-                        Runtime.getRuntime().availableProcessors(),
+                new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors()+2,
+                        Runtime.getRuntime().availableProcessors()*4,
                         60,
                         TimeUnit.SECONDS,
                         arrayBlockingQueue,
