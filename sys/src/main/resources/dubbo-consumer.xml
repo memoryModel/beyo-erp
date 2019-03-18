@@ -106,6 +106,12 @@
                         interface="cn.com.beyo.erp.modules.sys.facade.SystemFacade"
                         check="false"
                         url="dubbo://localhost:20884"/>
+
+    <!-- commonsType -->
+    <dubbo:reference    id="commonsTypeFacade"
+                        interface="cn.com.beyo.erp.modules.erp.commonstype.facade.CommonsTypeFacade"
+                        check="false"
+                        url="dubbo://localhost:20884"/>
     <!-- 部门 -->
     <dubbo:reference    id="departmentInfoFacade"
                         interface="cn.com.beyo.erp.modules.oneportal.facade.DepartmentInfoFacade"
@@ -117,5 +123,7 @@
     <!-- 员工 -->
     <dubbo:reference    id="userInfoFacade"
                         interface="cn.com.beyo.erp.modules.oneportal.facade.UserInfoFacade"
-                        url="dubbo://localhost:20885"/>
+                        url="dubbo://localhost:20885"
+                        mock="cn.com.beyo.erp.modules.mock.TestMock"
+                        timeout="1"/>
 </beans>

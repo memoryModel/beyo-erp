@@ -11,6 +11,7 @@ import cn.com.beyo.erp.commons.utils.CodeUtil;
 import cn.com.beyo.erp.commons.utils.IdWorker;
 import cn.com.beyo.erp.modules.erp.order.entity.Order;
 import cn.com.beyo.erp.modules.erp.order.entity.OrderContract;
+import cn.com.beyo.erp.modules.erp.order.facade.OrderFacade;
 import cn.com.beyo.erp.modules.erp.receivablebill.entity.ReceivableBill;
 import cn.com.beyo.erp.modules.school.classes.entity.SchoolClass;
 import cn.com.beyo.erp.modules.school.classes.mq.ClassProducer;
@@ -66,13 +67,11 @@ public class StudentService extends BeyoService<StudentDao, Student> implements 
     private ClassStudentsService classStudentsService;
 
     @Autowired
-    private Redis redis;
-
-    @Autowired
     private Curator curator;
 
     @Autowired
     private ClassProducer classProducer;
+
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS,isolation = Isolation.DEFAULT,readOnly = true)
@@ -194,7 +193,7 @@ public class StudentService extends BeyoService<StudentDao, Student> implements 
             InterProcessMutex lock =
                     new InterProcessMutex(curator.getCuratorFramework(),
                             CuratorPath.LOCK + "classId" + classId);
-            lock.acquire(10, TimeUnit.SECONDS);
+            lock.acquire(5, TimeUnit.SECONDS);
             try{
                 SchoolClass schoolClass = classService.get(Long.parseLong(classId));
                 //当前版本
@@ -223,13 +222,20 @@ public class StudentService extends BeyoService<StudentDao, Student> implements 
                 params.put("tuitionAmount",tuitionAmount);
                 params.put("miscellaneousAmount",miscellaneousAmount);
                 params.put("tuitionFavorable",tuitionFavorable);
-                params.put("orderId",IdWorker.getId());
+                Long orderId = IdWorker.getId();
+                params.put("orderId",orderId);
                 String keys = UUID.randomUUID().toString() + "$" + System.currentTimeMillis();
+
+                CountDownLatch countDownLatch = new CountDownLatch(1);
+                params.put("countDownLatch",countDownLatch);
 
                 Message message = new Message(TX_PAY_TOPIC,TX_PAY_TAGS,keys, JSON.toJSONString(params).getBytes());
                 TransactionSendResult transactionSendResult = transactionProducer.sendMessage(message, student);
-                if(transactionSendResult.getSendStatus() == SendStatus.SEND_OK){
-                    return "success";
+                //在MQ发送消息成功并且本地事务也执行成功了则返回报名成功，如果MQ的分布式事务也就是订单操作一段
+                //失败的话，则人工解决
+                if(transactionSendResult.getSendStatus() == SendStatus.SEND_OK &&
+                        transactionSendResult.getLocalTransactionState() == LocalTransactionState.COMMIT_MESSAGE){
+                        return "success";
                 }
             }
             return "fail";

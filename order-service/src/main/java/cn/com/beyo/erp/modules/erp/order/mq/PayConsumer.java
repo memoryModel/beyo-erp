@@ -69,12 +69,12 @@ public class PayConsumer{
         @Override
         public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
             MessageExt msg = list.get(0);
-
+            Map<String,Object> params = JSON.parseObject(new String(msg.getBody()),Map.class);
             try{
                 String topic = msg.getTopic();
                 String tags = msg.getTags();
                 String keys = msg.getKeys();
-                Map<String,Object> params = JSON.parseObject(new String(msg.getBody()),Map.class);
+
                 System.err.println("收到事务消息, topic: " + topic + ", tags: " + tags + ", keys: " + keys + ", map: " + params);
 
                 Long studentId = (Long)params.get("studentId");

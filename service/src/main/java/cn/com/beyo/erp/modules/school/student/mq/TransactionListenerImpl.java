@@ -59,9 +59,10 @@ public class TransactionListenerImpl implements TransactionListener{
             schoolClass.setId(schoolClassId);
             schoolClass.setClassRealNum(classRealNum);
             schoolClass.setCurrentVersion(currentVersion);
-            Integer res = classService.updateClassRealNumById(schoolClass);//更新报班人数
+            Integer count = classService.updateClassRealNumById(schoolClass);//更新报班人数
             Student student = (Student)o;
-            if(res > 0){
+            //如果更新报班人数成功的话
+            if(count >= 0){
                 //报班学员状态
                 student.setStudentType(StudentTypeStatus.OFFICIAL.getValue());//学员类型 设置为 2.正式报名学员
                 if(student.getStatus()!= StudentStatus.STUDY.getValue())student.setStatus(StudentStatus.UNREAD.getValue());//学员状态 设置为 0.未读
@@ -79,7 +80,7 @@ public class TransactionListenerImpl implements TransactionListener{
                 classStudents.setStatus(ClassStudentsStatus.READY.getValue());//设置该班级学生状态  4.报名未开班
                 classStudentsService.save(classStudents);//新增班级学生
                 return LocalTransactionState.COMMIT_MESSAGE;
-            }else{//没有更新成功的话，则让MQ的prepare状态的消息回滚
+            }else{//报班人数没有更新成功的话，则让MQ的prepare状态的消息回滚
                 //加日志
                 return LocalTransactionState.ROLLBACK_MESSAGE;
             }
@@ -91,6 +92,7 @@ public class TransactionListenerImpl implements TransactionListener{
         }
     }
 
+    //二次消息发送失败的话，MQ会进行定时重试
     @Override
     public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
         try{

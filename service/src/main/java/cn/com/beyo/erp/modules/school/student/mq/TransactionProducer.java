@@ -40,6 +40,8 @@ public class TransactionProducer implements InitializingBean {
                         return thread;
                     }
                 });
+        //设置重试次数
+        this.producer.setRetryTimesWhenSendFailed(3);
         this.producer.setExecutorService(executorService);
         this.producer.setNamesrvAddr(NAMESERVER);
     }

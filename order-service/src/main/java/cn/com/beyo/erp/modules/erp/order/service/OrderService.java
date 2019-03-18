@@ -275,6 +275,8 @@ public class OrderService extends BeyoService<OrderDao, Order> implements OrderF
 		}catch (Exception e){
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			e.printStackTrace();
+			//新增订单，订单合同，应收账单是MQ的分布式事务的处理的操作，在进行数据库操作出现异常的话要加入日志
+			//以便于和MQ的异常信息结合查询
 			return "fail";
 		}
 		return "success";

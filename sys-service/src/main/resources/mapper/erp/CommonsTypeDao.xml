@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.beyo.erp.modules.erp.commonstype.dao.CommonsTypeDao">
+    
+	<sql id="commonsTypeColumns">
+		a.id AS "id",
+		a.platform_id AS "platformId",
+		a.commons_name AS "commonsName",
+		a.description AS "description",
+		a.category AS "category",
+		a.status AS "status",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser"
+	</sql>
+	
+	<sql id="commonsTypeJoins">
+	</sql>
+    
+	<select id="get" resultType="CommonsType">
+		SELECT 
+			<include refid="commonsTypeColumns"/>
+		FROM erp_commons_type a
+		<include refid="commonsTypeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CommonsType">
+		SELECT 
+			<include refid="commonsTypeColumns"/>
+		FROM erp_commons_type a
+		<include refid="commonsTypeJoins"/>
+		<where>
+			1=1
+			<if test="commonsName != null and commonsName != '' ">
+				AND a.commons_name  like CONCAT ('%',#{commonsName},'%')
+			</if>
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+
+			<if test="category != null">
+				AND a.category = #{category}
+			</if>
+
+			<if test="startTime != null and startTime != ''">
+				AND date(a.create_time) &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND date(a.create_time) &lt;= #{endTime}
+			</if>
+		</where>
+
+		<choose>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CommonsType">
+		SELECT 
+			<include refid="commonsTypeColumns"/>
+		FROM erp_commons_type a
+		<include refid="commonsTypeJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findcomonsTypeList" resultType="CommonsType">
+	SELECT
+	a.commons_name,a.id
+	FROM erp_commons_type a
+	WHERE 1=1
+	GROUP BY commons_name
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO erp_commons_type(
+			id,
+			platform_id,
+			commons_name,
+			description,
+			category,
+			status,
+			create_time,
+			create_user
+		) VALUES (
+			#{id},
+			#{platformId},
+			#{commonsName},
+			#{description},
+			#{category},
+			#{status},
+			#{createTime},
+			#{createUser}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE erp_commons_type SET 	
+			platform_id = #{platformId},
+			commons_name = #{commonsName},
+			description = #{description},
+			category = #{category},
+			status = #{status},
+			create_time = #{createTime},
+			create_user = #{createUser}
+		WHERE id = #{id}
+	</update>
+	
+	<!--<update id="delete">-->
+		<!--UPDATE erp_commons_type-->
+		<!--WHERE id = #{id}-->
+	<!--</update>-->
+
+	<!--逻辑删除的sql-->
+	<update id="delete">
+		UPDATE erp_commons_type SET
+		status = #{status}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

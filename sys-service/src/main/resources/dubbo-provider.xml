@@ -38,4 +38,8 @@
     <dubbo:service  timeout="80000"
                     interface="cn.com.beyo.erp.modules.sys.facade.SystemFacade"
                     ref="systemService"/>
+    <!-- commonsType -->
+    <dubbo:service  timeout="80000"
+                    interface="cn.com.beyo.erp.modules.erp.commonstype.facade.CommonsTypeFacade"
+                    ref="commonsTypeService"/>
 </beans>
