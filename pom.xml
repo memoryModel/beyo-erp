@@ -22,7 +22,7 @@
         <repository>
             <id>beyo-public</id>
             <name>Beyo Public Repository</name>
-            <url>http://nexus.beyo.com.cn/nexus/content/groups/public</url>
+            <url>http://47.94.158.71:8081/nexus/content/groups/public</url>
         </repository>
     </repositories>
 
@@ -593,7 +593,7 @@
             <version>2.2</version>
         </dependency>
 
-        <!--  私库     -->
+        <!--  nexus     -->
 
         <!-- 中文分词 -->
         <dependency>
