@@ -9,6 +9,7 @@ import cn.com.beyo.erp.commons.service.BeyoService;
 import cn.com.beyo.erp.commons.status.*;
 import cn.com.beyo.erp.commons.utils.CodeUtil;
 import cn.com.beyo.erp.commons.utils.IdWorker;
+import cn.com.beyo.erp.commons.utils.TimeUtils;
 import cn.com.beyo.erp.modules.erp.order.entity.Order;
 import cn.com.beyo.erp.modules.erp.order.entity.OrderContract;
 import cn.com.beyo.erp.modules.erp.order.facade.OrderFacade;
@@ -224,10 +225,11 @@ public class StudentService extends BeyoService<StudentDao, Student> implements 
                 params.put("tuitionFavorable",tuitionFavorable);
                 Long orderId = IdWorker.getId();
                 params.put("orderId",orderId);
-                String keys = UUID.randomUUID().toString() + "$" + System.currentTimeMillis();
-
+                //如果得到的发送事务消息结果是失败的情况下，countDownLatch会根据实际业务等待时间再给mq
+                //回查机会
                 CountDownLatch countDownLatch = new CountDownLatch(1);
                 params.put("countDownLatch",countDownLatch);
+                String keys = UUID.randomUUID().toString() + "$" + System.currentTimeMillis();
 
                 Message message = new Message(TX_PAY_TOPIC,TX_PAY_TAGS,keys, JSON.toJSONString(params).getBytes());
                 TransactionSendResult transactionSendResult = transactionProducer.sendMessage(message, student);
@@ -236,6 +238,13 @@ public class StudentService extends BeyoService<StudentDao, Student> implements 
                 if(transactionSendResult.getSendStatus() == SendStatus.SEND_OK &&
                         transactionSendResult.getLocalTransactionState() == LocalTransactionState.COMMIT_MESSAGE){
                         return "success";
+                }else if(transactionSendResult.getSendStatus() == SendStatus.SEND_OK &&
+                        transactionSendResult.getLocalTransactionState() == LocalTransactionState.UNKNOW){
+                        countDownLatch.await(3,TimeUnit.SECONDS);
+                        if(transactionSendResult.getLocalTransactionState() == LocalTransactionState.COMMIT_MESSAGE){
+                            return "success";
+                        }
+                        return "fail";
                 }
             }
             return "fail";

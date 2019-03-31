@@ -92,7 +92,7 @@ public class TransactionListenerImpl implements TransactionListener{
         }
     }
 
-    //二次消息发送失败的话，MQ会进行定时重试
+    //二次消息发送失败的话，MQ会进行定时重试 可以设置回查机制为1s一次，一共3次
     @Override
     public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
         try{
@@ -101,6 +101,7 @@ public class TransactionListenerImpl implements TransactionListener{
             String studentNumber = (String)params.get("studentNumber");
             Long schoolClassId = (Long)params.get("schoolClassId");
             Integer classRealNum = (Integer)params.get("classRealNum");
+            CountDownLatch countDownLatch = (CountDownLatch)params.get("countDownLatch");
             Student student = studentService.get(studentId);
             SchoolClass schoolClass = classService.get(schoolClassId);
             ClassStudents classStudents = new ClassStudents();
@@ -112,6 +113,7 @@ public class TransactionListenerImpl implements TransactionListener{
                     classRealNum.intValue() == schoolClass.getClassRealNum().intValue() &&
                     classStudentsList != null &&
                     classStudentsList.size() == 1){
+                    countDownLatch.countDown();
                 return LocalTransactionState.COMMIT_MESSAGE;
             }else{
                 return LocalTransactionState.ROLLBACK_MESSAGE;
